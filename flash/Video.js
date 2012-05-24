@@ -69,7 +69,7 @@ define([
 			options.loader = true;
 			options.videoRef = 'flashVideo' + (flashVideoCount++);
 			options.autoplay = true;
-			//options.standalone = true;
+			options.standalone = true;
 			this.inherited(arguments);
 		}
 	});
