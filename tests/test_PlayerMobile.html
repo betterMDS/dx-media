@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head class="mobile">
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<title>Player Mobile Test</title>
+
+	<link href="../resources/dxMobile.css" rel="stylesheet" />
+	<link href="../resources/dxSlideshow.css" rel="stylesheet" />
+	<link href="../resources/dxVtour.css" rel="stylesheet" />
+	<link href="../resources/dxPlayerMobile.css" rel="stylesheet" />
+	<link href="../resources/dxPlayerControls.css" rel="stylesheet" />
+	<script>
+		dojoConfig = {
+			async:1,
+			parseOnLoad: true,
+			mblAlwaysHideAddressBar: true,
+			packages:[{
+					name:"dx-media",
+					location:"../dx-media"
+				},{
+					name:'dx-alias',
+					location:'../dx-alias'
+				},{
+					name:'dx-timer',
+					location:'../dx-timer'
+				}]
+		}
+	</script>
+	<script type="text/javascript" src="../../dojo/dojo.js"></script>
+
+	<script type="text/javascript">
+		require([
+			"dojo",
+			"dojo/domReady!",
+			"dojo/parser",
+			"dx-dojo/build",
+			"dx-media/player/Mobile",
+			"dx-media/mobile/Video",
+			"dx-media/html5/Vtour",
+			"dx-media/html5/Slideshow",
+			"dx-media/html5/Preview",
+
+			"dx-media/controls/Controlbar",
+			"dx-media/controls/elements/Facebook",
+			"dx-media/controls/elements/Twitter",
+			"dx-media/controls/elements/Embed",
+			"dx-media/controls/elements/Video",
+			"dx-media/controls/elements/Slideshow",
+			"dx-media/controls/elements/Vtour",
+			"dx-media/controls/elements/ScreenPlayButton",
+
+			"dx-media/plugins/VAST"
+
+		], function(dojo, ready, parser){
+			parser.parse();
+		});
+	</script>
+
+</head>
+<body>
+	<div class="view">
+		<div data-dojo-type="dx-media.player.Mobile" data-dojo-props="defaultView:'Video'">
+
+			<div data-dojo-type="dx-media/html5/Preview" data-dojo-props="src:'media/images/SightAndSound.jpg'"></div>
+			<div data-dojo-type="dx-media/controls/elements/ScreenPlayButton"></div>
+
+			<div data-dojo-type="dx-media/mobile/Video" data-dojo-props="poster:'media/images/SightAndSound_vid.jpg', src:'media/video/SightAndSound_sm.mp4'"></div>
+			<div data-dojo-type="dx-media/html5/Vtour" data-dojo-props="src:'media/images/VT_01.jpg'"></div>
+			<div data-dojo-type="dx-media/html5/Slideshow" data-dojo-props="media:'./media/playlists/frmedia_sm.js'"></div>
+
+			<div data-dojo-type="dx-media/plugins/VAST" data-dojo-props="media:'./media/ads/vast.js'"></div>
+			<div data-dojo-type="dx-media/controls/Controlbar" >
+
+				<div data-dojo-type="dx-media/controls/elements/Video" ></div>
+				<div data-dojo-type="dx-media/controls/elements/Slideshow" ></div>
+				<div data-dojo-type="dx-media/controls/elements/Vtour" ></div>
+
+				<!--<div data-dojo-type="dx-media/controls/elements/Embed" ></div>-->
+				<div data-dojo-type="dx-media/controls/elements/Facebook" ></div>
+				<div data-dojo-type="dx-media/controls/elements/Twitter" ></div>
+
+			</div>
+		</div>
+	</div>
+</body>
+</html>

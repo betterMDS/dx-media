@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+    <title>Test dx-video Mobile Video</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+	<!--<meta name="viewport" content="width=device-width, user-scalable=no" />-->
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<link href="../resources/dxMobile.css" rel="stylesheet" />
+	<style>
+		html, body{
+			width:480px;
+			margin:0;
+			padding:0;
+		}
+		#player{
+			width:480px;
+			height:270px;
+			position:relative;
+		}
+
+		@media all and (max-width: 480px) {
+			html, body, #player {
+				width: 320px;
+				max-width:320px;
+			}
+			#player {
+				height:180px;
+			}
+			textarea{
+				width:300px;
+			}
+		}
+	</style>
+    <script>
+        dojoConfig = {
+			// the app if fully async capable; therefore use async mode
+			async:1
+		};
+    </script>
+    <script src="../../dojo/dojo.js"></script>
+	<script>
+		require([
+				"dojo",
+				"dojo/parser",
+				"dojo/domReady!",
+				"dx-media/video/Mobile",
+				"dx-alias/on",
+				"dijit/registry"
+			], function(dojo, parser, ready, vtour, on, registry){
+
+				console.log('dojo', dojo);
+				parser.parse();
+
+				var vt = registry.byId('vtour');
+
+				on('vt1', 'click', function(){
+					//vt.load('images/VT_01.jpg');
+				});
+				on('vt2', 'click', function(){
+					//vt.load('images/VT_02.jpg');
+				});
+				on('vt3', 'click', function(){
+					//vt.load('images/VT_03.jpg');
+				});
+
+			});
+	</script>
+</head>
+<body>
+
+    <div id="player">
+		<video id='vid' data-dojo-type="dx.media.video.Mobile" poster="media/images/SightAndSound.jpg">
+			<source src="media/video/SightAndSound_sm.mp4"></source>
+		</video>
+	</div>
+
+	<button id='vt1'>VT 01</button>
+	<button id='vt2'>VT 02</button>
+	<button id='vt3'>VT 03</button>
+
+	<textarea id="dbg" rows=6 ></textarea>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+    <title>Test dx-vtour Virtual Tour</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<link href="../resources/dxVtour.css" rel="stylesheet" />
+	<style>
+		html, body{
+			width:640px;
+			margin:0;
+			padding:0;
+		}
+		#player{
+			width:640px;
+			height:360px;
+			position:relative;
+		}
+
+		@media all and (max-width: 480px) {
+			html, body, #player {
+				width: 320px;
+			}
+			#player {
+				height:180px;
+			}
+		}
+	</style>
+    <script>
+        dojoConfig = {
+			async:1
+		};
+    </script>
+    <script src="../../dojo/dojo.js"></script>
+	<script>
+		require([
+				"dojo",
+				"dojo/parser",
+				"dojo/domReady!",
+				"dx-media/vtour/Vtour",
+				"dx-alias/on",
+				"dijit/registry"
+			], function(dojo, parser, ready, vtour, on, registry){
+			console.log('dojo', dojo);
+            parser.parse();
+
+			var vt = registry.byId('vtour');
+
+			on('vt1', 'click', function(){
+				vt.load('./mediaimages/VT_01.jpg');
+			});
+			on('vt2', 'click', function(){
+				vt.load('./mediaimages/VT_02.jpg');
+			});
+			on('vt3', 'click', function(){
+				vt.load('./mediaimages/VT_03.jpg');
+			});
+
+		});
+	</script>
+</head>
+<body>
+
+    <div id="player">
+		<div id='vtour' data-dojo-type="dx-media.vtour.Vtour" data-dojo-props="src:'./media/images/VT_01.jpg'"></div>
+	</div>
+	<button id='vt1'>VT 01</button>
+	<button id='vt2'>VT 02</button>
+	<button id='vt3'>VT 03</button>
+
+</body>
+</html>

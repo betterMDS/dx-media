@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head class="mobile">
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<title>dx-Image Test</title>
+<style>
+h3{
+	font-family:monospace !important;
+	list-style:decimal
+}
+blockquote{
+	width:400px;
+	padding:5px;
+	border-radius:7px;
+	border:1px solid #979EAF;
+	background: -moz-linear-gradient(top, #F4F8FF 0%, #E0EFFC 100%);
+	background: -webkit-linear-gradient(top, #F4F8FF 0%, #E0EFFC 100%);
+}
+ul{
+background:#ccc;
+width:400px;
+padding:3px;
+margin-left:40px;
+font-family:monospace;
+}
+li{
+background:#fff;
+list-style:lao;
+padding:3px 7px;
+margin:3px;
+border:1px solid #6D7893;
+}
+li:hover{
+background:#FFFEEA;
+}
+</style>
+	<link href="../resources/dxSlideshow.css" rel="stylesheet" />
+	<script>
+		dojoConfig = {
+			async:1,
+			parseOnLoad: true,
+			mblAlwaysHideAddressBar: true,
+			packages:[{
+					name:"dx-media",
+					location:"../dx-media"
+				},{
+					name:'dx-alias',
+					location:'../dx-alias'
+				},{
+					name:'dx-timer',
+					location:'../dx-timer'
+				}]
+		}
+	</script>
+	<script type="text/javascript" src="../../dojo/dojo.js"></script>
+
+	<script type="text/javascript">
+		require([
+			"dojo",
+			"dojo/ready",
+			"dojo/parser",
+			"dx-dojo/build",
+			"dx-media/html5/Image",
+			"dx-media/html5/Photo"
+		], function(dojo, ready, parser){
+			parser.parse();
+		});
+	</script>
+
+</head>
+<body>
+	<div class="view">
+		<div data-dojo-type="dx-media/html5/Photo" data-dojo-props="src:'media/images/SightAndSound.jpg'"></div>
+	</div>
+</body>
+</html>

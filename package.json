@@ -1,0 +1,25 @@
+{
+    "name": "dx-media",
+    "description": "Dojo Extension Media Library",
+    "version": "1.0",
+    "licenses": [
+        {
+            "type": "AFLv2.1",
+            "url": "http://trac.dojotoolkit.org/browser/dojo/trunk/LICENSE#L43"
+        },
+        {
+            "type": "BSD",
+            "url": "http://trac.dojotoolkit.org/browser/dojo/trunk/LICENSE#L13"
+        }
+    ],
+    "bugs": "",
+    "keywords": [
+        "JavaScript Library"
+    ],
+    "homepage": "http://clubajax.org/",
+    "dependencies": {
+
+    },
+    "dojoBuild": "dx-media.profile.js",
+    "main": "./main"
+}

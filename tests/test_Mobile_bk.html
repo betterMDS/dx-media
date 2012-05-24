@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>dojox.av.MobileVideo</title>
+	<style type="text/css">
+		@import "../../dojo/resources/dojo.css";
+		@import "../../dijit/tests/css/dijitTests.css";
+		@import "../resources/dojoxAv.css";
+	</style>
+
+    <script>
+		var djConfig={
+			isDebug:true,
+			parseOnLoad: true,
+			async:true,
+			modulePaths:{'dojox-av':'../dojox-av'}
+		};
+    </script>
+
+	<script type="text/javascript" src="../../dojo/dojo.js"></script>
+	<script type="text/javascript" src="../consoleFix.js"></script>
+	<script type="text/javascript">
+
+		require(["dojo/_base/kernel", "dojo/parser", "dojo/on", "dojox-av/MobileVideo"], function(dojo, pr, on, MobileVideo){
+			window.dojo = dojo;
+			var onReady = function(){
+				var v = new MobileVideo({
+					src:"video/SightAndSound.mp4",
+					poster:"video/SightAndSound.jpg",
+					width:480,
+					height:270
+				});
+				dojo.byId("mobilevideo").appendChild(v.domNode);
+			}
+			dojo.ready(function(){
+				onReady();
+			});
+			if(/BlackBerry/.test(window.navigator.userAgent)){
+				setTimeout(onReady, 1000);
+			}
+		});
+
+	</script>
+
+</head>
+<body >
+<h1>dojox.av.MobileVideo</h1>
+
+<!--
+<h4>From Markup</h4>
+<video
+	   src="video/SightAndSound_sm.mp4"
+	   poster="video/SightAndSound.jpg"
+	   data-dojo-type="dojox-av.MobileVideo"
+	   id="video"
+	   width="320" height="180">
+</video>-->
+<h4>Programmatic</h4>
+<div id="mobilevideo"></div>
+
+<button id="play">play</button><button id="pause">pause</button>
+<script>
+
+</script>
+<div id="bvDbg">debuggin.</div>
+
+</body>
+</html>

@@ -1,0 +1,262 @@
+
+.dxPlayerControls{
+	position:absolute;
+	left:0;
+	height:27px;
+	width:100%;
+	padding:3px;
+	bottom:0px;
+	background: -moz-linear-gradient(top, #37383e 0%, #2d2d2d 49%, #222222 51%);
+	background: -webkit-linear-gradient(top, #37383e 0%, #2d2d2d 49%, #222222 51%);
+
+	font-family:sans-serif;
+	font-size:11px;
+	color:#fff;
+}
+.dxPlayerControls .left{
+	text-align:left;
+	position:absolute;
+	width:50%;
+	left:8px;
+	top:4px;
+}
+.dxPlayerControls .right{
+	text-align:right;
+	position:absolute;
+	width:50%;
+	right:8px;
+	top:4px;
+}
+.dxPlayerControls .left a, .dxPlayerControls .right a{
+	display:inline-block;
+}
+.dxPlayerControls .right .dxIcon{
+	margin-right:3px;
+}
+.dxPlayerControls .left .dxIcon{
+	margin-left:3px;
+}
+
+
+/***************************************************************
+ ************************** BUTTONS ****************************
+ ***************************************************************/
+
+.dxButton{
+	display:inline-block;
+}
+.dxIcon{
+	display:inline-block;
+	width:26px;
+	height:26px;
+	background-image:url(icons.png);
+	background-repeat:no-repeat;
+}
+.dxIcon.dxFacebookBtn{				background-position:-80px -160px;	}
+.dxIcon.dxFacebookBtn:hover{		background-position:-120px -160px;	}
+.dxIcon.dxTwitterBtn{				background-position:-0px -160px;	}
+.dxIcon.dxTwitterBtn:hover{			background-position:-40px -160px;	}
+.dxIcon.dxEmbedBtn{					background-position:-0px -200px; }
+.dxIcon.dxEmbedBtn:hover{			background-position:-40px -200px; }
+
+.dxIcon.dxVideoBtn{					background-position:-0px -360px; }
+.dxIcon.dxVideoBtn:hover{			background-position:-40px -360px; }
+.dxIcon.dxVideoBtn.dxSelected{		background-position:-80px -360px; }
+.dxIcon.dxVideoBtn.dxSelected:hover{	background-position:-120px -360px; }
+
+.dxIcon.dxSlideshowBtn{				background-position:-0px -400px;	}
+.dxIcon.dxSlideshowBtn:hover{		background-position:-40px -400px;	}
+.dxIcon.dxSlideshowBtn.dxSelected{	background-position:-80px -400px;	}
+.dxIcon.dxSlideshowBtn.dxSelected:hover{background-position:-120px -400px;	}
+
+.dxIcon.dxVtourBtn{ 				background-position:-0px -440px; width:31px;}
+.dxIcon.dxVtourBtn:hover{			background-position:-40px -440px; 	}
+.dxIcon.dxVtourBtn.dxSelected{ 		background-position:-80px -440px; }
+.dxIcon.dxVtourBtn.dxSelected:hover{	background-position:-120px -440px; 	}
+
+
+
+.dxIconFx{
+	/*
+	height should be about half that of the control bar
+	in order to get text elements to stay inline with
+	the buttons
+	*/
+	height:12px;
+
+	width:24px;
+	margin-top:2px;
+	border:0px solid #ff0000;
+	position:relative;
+	cursor:pointer;
+}
+.active, .hover, .normal{
+	position:absolute;
+	left:0;
+	top:0;
+	width:24px;
+	height:20px;
+
+	background-image:url(icons.png);
+	background-repeat:no-repeat;
+	opacity:1;
+
+}
+.normal{
+	opacity:1;
+	-webkit-transition: opacity 500ms linear;
+	-moz-transition: opacity 500ms linear;
+}
+.hover{
+	-webkit-transition: opacity 500ms linear;
+	-moz-transition: opacity 500ms linear;
+	opacity:0;
+}
+.active{
+	opacity:0;
+}
+.dxIconFx:hover .normal{
+	opacity:0;
+}
+.dxIconFx:hover .hover{
+	opacity:1;
+}
+.dxIconFx:active .active{
+	opacity:1;
+}
+
+.dxPlayIcon .normal{ 	background-position:0px 0px; }
+.dxPlayIcon .hover{		background-position:-40px 0px; }
+.dxPlayIcon .active{	background-position:-80px 0px; }
+
+.dxPauseIcon .normal{ 	background-position:-120px -0px; }
+.dxPauseIcon .hover{	background-position:-160px -0px; }
+.dxPauseIcon .active{	background-position:-200px -0px; }
+
+.dxFullscreenIcon .normal{ 	background-position:-0px -40px; }
+.dxFullscreenIcon .hover{	background-position:-40px -40px; }
+.dxFullscreenIcon .active{	background-position:-80px -40px; }
+
+.dxVolumeIcon .normal{ 	background-position:-0px -80px; }
+.dxVolumeIcon .hover{	background-position:-40px -80px; }
+.dxVolumeIcon .active{	background-position:-80px -80px; }
+
+
+
+/***************************************************************
+ *************************** STATUS ****************************
+ ***************************************************************/
+
+.dxFlexSpace{
+	height:27px;
+	position:relative;
+	background:none	;
+}
+.dxStatus{
+	position:absolute;
+	right:5px;
+	top:5px;
+}
+.dxTime{
+	display:inline-block;
+}
+.dxDuration{
+	display:inline-block;
+}
+
+
+
+/***************************************************************
+ *************************** SLIDER ****************************
+ ***************************************************************/
+
+.dxSlider{
+	height:6px;
+	background:#eee;
+	position:relative;
+	margin:10px 10px 0 10px;
+	cursor:pointer;
+}
+.dxSliderConstrain{
+	background:#8ea7b4;
+	width:0%;
+	height:6px;
+	position:absolute;
+	top:0px;
+	left:0px;
+}
+.dxSliderProgress{
+	background:#098dd7;
+	width:0%;
+	height:6px;
+	position:absolute;
+	top:0px;
+	left:0px;
+}
+.dxSliderProgressA{
+	width:1px;
+	height:4px;
+	background:#098dd7;
+	position:absolute;
+	top:1px;
+	left:-1px;
+}
+.dxSliderProgressB{
+	width:1px;
+	height:4px;
+	background:#eee;
+	position:absolute;
+	top:1px;
+	right:-1px;
+}
+.maxed .dxSliderProgressB{
+	background:#8ea7b4;
+}
+.dxSliderHandle{
+	width:15px;
+	margin-left:-8px;
+	height:15px;
+	background:url(icons.png) no-repeat -120px -40px;
+	position:absolute;
+	left:0px;
+	top:-3px;
+	cursor:pointer;
+}
+.dxSliderHandle:hover{					background-position:-160px -40px; }
+.dxSliderHandle:active{					background-position:-200px -80px; }
+
+.dxVolumePopup .dxHandle{ 			background-position:-101px -298px; }
+.dxVolumePopup .dxHandle:hover{ 	background-position:-125px -298px; }
+.dxVolumePopup .dxHandle:active{	background-position:-148px -298px; }
+
+
+
+
+.dxTooltip{
+	position:absolute;
+	top:20px;
+	left:20px;
+}
+.dxTooltipBubble{
+	background:rgba(0,0,0,.7);
+	border:1px solid #fff;
+	border-radius:4px;
+	position:relative;
+	box-shadow:-3px 3px 3px rgba(0,0,0,.3);
+}
+.dxTooltipTip{
+	position:absolute;
+	width:0;
+	height:0;
+	border-left:10px solid transparent;
+	border-right:10px solid transparent;
+	border-bottom:0;
+	border-top:10px solid #fff;
+}
+.dxTooltipContainer{
+	position:absolute;
+	top:0px;
+	left:5px;
+	width:95%;
+	height:100%;
+}
