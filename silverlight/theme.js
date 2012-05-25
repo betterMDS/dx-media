@@ -20,7 +20,7 @@ define([
 		dark:dark,
 
 		controls:{
-			width:200,
+			width:1,
 			height:40,
 			radius:5,
 			gap:5

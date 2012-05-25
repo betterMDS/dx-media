@@ -6,9 +6,9 @@ define([
 	'dx-alias/on',
 	'dx-alias/log',
 	'dx-timer/timer'
-], function(dojo, has, declare, on, lang, logger, timer){
+], function(dojo, has, declare, lang, on, logger, timer){
 
-	var log = logger('SL', 1);
+	var log = logger('SL', 0);
 
 	window.__dojoSilverlightError = function(sender, err){
 		var t = "Silverlight Error:\n" +
@@ -53,14 +53,16 @@ define([
 		enableFrameRateCounter:false,
 
 		constructor: function(props, node){
-			//b.mix(this, props);
+			lang.mix(this, props);
 			this.node = typeof node == 'string' ? document.getElementById(node) : node;
 			console.log('SL CANVAS NODE', this.node)
 
 			var onLoadName = lang.uid('sl_load'), self = this;
 			window[onLoadName] = function(sender){
+				console.log('sl loaded')
 				setTimeout(function(){
 					self.container = sender;
+					self.canvas = sender;
 					self.onLoad(sender);
 				}, 100)
 			};
@@ -109,8 +111,6 @@ define([
 
 		onLoad: function(sender){
 			log('loaded', sender);
-			this.canvas = sender;
-
 			//var node = new Rect({height:50, radius:10}, this.canvas);
 			//new Ellipse({width:30, x:5, y:5}, node);
 		}
@@ -161,7 +161,7 @@ define([
 		}
 	});
 
-	var Shape = declare(null, {
+	var Shape = declare(Container, {
 		x:20,
 		y:20,
 		id:'',
@@ -222,7 +222,7 @@ define([
 			if(y !== undefined){
 				this.x = obj; this.y = y;
 			}else if(obj){
-				//b.mix(this, obj);
+				this.mix(obj);
 			}
 			//log('pos:', this.x, this.y)
 			this.container['Canvas.Top'] = this.y;
@@ -347,18 +347,18 @@ define([
 			}
 			return true;
 		}
-	}, Container);
+	});
 
-	var Media = declare(null, {
+	var Media = declare(Shape, {
 		type:'MediaElement',
 		src:'',
 		constructor: function(){
 			if(this.src) this.node.Source = this.src;
 			this.node.Stretch = true;
 		}
-	}, Shape);
+	});
 
-	var Path = declare(null, {
+	var Path = declare(Shape, {
 		type:'Path',
 		data:null, // String
 		constructor: function(props, parent){
@@ -370,17 +370,25 @@ define([
 			var str = '';
 			this.data.forEach(function(p){
 				if(p.t && p.t.toLowerCase() == 'z'){
+					// Data="M 100,200 C 100,25 400,350 400,175 H 280"
 					str += ' '+p.t;
+				}else if(p.t && p.t.toLowerCase() == 'c'){
+					str +=
+							p.t + ' ' + p.x1 + ',' + p.y1 + ' ' +
+							' ' + p.x2 + ',' + p.y2 + ' ' +
+							' ' + p.x + ',' + p.y + ' '
 				}else{
-					str += p.t + ' ' + p.x + ',' + p.y;
+					str += p.t + ' ' + p.x + ',' + p.y + ' ';
 				}
 			}, this);
 
+			log('data:', str)
+
 			this.node.Data = str;
 		}
-	}, Shape);
+	});
 
-	var Text = declare(null, {
+	var Text = declare(Shape, {
 		type:'TextBlock',
 		text:'',
 		fontFamily:'Arial',
@@ -389,7 +397,7 @@ define([
 		fontWeight:'Normal',
 		color:'#000000',
 		constructor: function(props, parent){
-			//FontFamily, FontSize, FontStretch, FontStyle, FontWeight, Foreground
+			log('Text:', this.text);
 			this.setText();
 		},
 		setText: function(obj){
@@ -401,21 +409,21 @@ define([
 			this.node.Foreground = this.color;
 
 		}
-	}, Shape);
+	});
 
-	var Rect = declare(null, {
+	var Rect = declare(Shape, {
 		type:'Rectangle',
 		constructor: function(props, parent){
-			log('make Rect');
+			log('make Rect', this);
 		}
-	}, Shape);
+	});
 
-	var Ellipse = declare(null, {
+	var Ellipse = declare(Shape, {
 		type:'Ellipse',
 		constructor: function(props, parent){
 			log('make Ellipse');
 		}
-	}, Shape);
+	});
 
 	log('base loaded.');
 

@@ -1,7 +1,606 @@
 define([
-	'dojo',
+	'dojo/_base/declare',
+	'dojo/sniff',
+	'dijit/_WidgetBase',
+	'dijit/_TemplatedMixin',
+	'dx-alias/dom',
+	'dx-alias/string',
+	'dx-alias/lang',
+	'dx-alias/on',
+	'dx-alias/topic',
+	'dx-alias/log',
+	'dx-timer/timer',
+	'./base',
 	'./theme',
-	'./base'
-], function(dojo, theme){
+	'./Controls'
+],function(declare, has, _WidgetBase, _TemplatedMixin, dom, string, lang, on, topic, logger, timer, sl, theme, Controls){
+	//
+	//	summary:
+	//		An Silverlight Video player.
+	//		Can be used standalone, or as a component of a more versatile media
+	//		player, for browsers that can't play HTML5 video or specific video
+	//		codecs (like MP4 in Firefox).
+	//
+	var log = logger('SLV', 1);
+
+	var errorMap = {
+		'msg':'Silverlight Media Error',
+		'3001':'Video Codec Not Supported',
+		'4001':'File Not Found'
+	};
+
+	var delayHandle,
+		isReady = function(ctx, name){
+			if(delayHandle) delayHandle.remove();
+			var f = isReady.caller.bind(ctx);
+			if(ctx[name]) return true;
+			delayHandle = timer(function(){
+				f();
+			}, 100);
+			return false;
+		}
+
+	return declare("dx-media.silverlight.Video", [_WidgetBase, _TemplatedMixin], {
+
+		templateString:'<div class="${baseClass} dxSilverlightVideo" ></div>',
+		baseClass:'',
+		x:0,
+		y:0,
+		width:0,
+		height:0,
+		path:'',
+
+		timeInterval:100,
+		autoplay:true,
+		complete:false,
+		isFullscreen:false,
+		hasPlayed:false,
+		videoReady:false,
+
+		duration:0,
+		naturalVideoHeight:0,
+		naturalVideoWidth:0,
+
+		useNaturalSize: 0,
+
+		showing:1,
+
+		background:'#ffff00',
+		windowless:true,
+		enableFrameRateCounter:false,
+
+		constructor: function(/*Object*/options, node){
+
+		},
+
+		postCreate: function(){
+			this.hasHtmlControls = false; // TODO: really check for this
+			this.init();
+		},
+
+		init: function(){
+			log('stylesheet loaded, ready to build...');
+			if(this.inited) return;
+			this.inited = 1;
+			if(!this.width){
+				var box = dom.box(this.domNode);
+				this.width = box.w;
+				this.height = box.h;
+			}
+			this.canvas = new sl.Canvas({
+				width:this.width,
+				height:this.height,
+				background:this.background,
+				windowless:this.windowless,
+				enableFrameRateCounter:this.enableFrameRateCounter,
+				onLoad: lang.bind(this, 'onCanvasReady')
+			}, this.domNode);
+		},
+
+		onCanvasReady: function(sender){
+			log('onCanvasReady');
+			if(this.wasReady) return;
+			this.wasReady = 1;
+			this.buildBack();
+			this.buildVideo();
+
+
+			this.controls = new Controls({width:this.width, height:this.height}, this.back);
+
+			if(this.hasHtmlControls) this.controls.hide();
+
+			this.setupEvents();
+			this.connect();
+
+			timer(this, function(){
+				if(this.path) this.setVideo(this.path);
+			}, 100)
+			log('Video Ready.', this.path)
+		},
+
+		buildBack: function(){
+			var bk = {
+				x:0,
+				y:0,
+				width:this.width,
+				height:this.height,
+				nostroke:1,
+				grad:theme.getGrad(this.height, theme.medium, theme.dark)
+			}
+			this.back = new sl.Rect(bk, this.canvas);
+		},
+
+		buildVideo: function(){
+			log('Video source:', this.path, 'autoplay:', this.autoplay);
+			// size and pos set by centerVideo()
+			// note video size slightly too big can crash the plugin
+			this.video = new sl.Media({}, this.back);
+			this.video.node.autoPlay = this.autoplay;
+			//if(this.path) this.video.node.Source = this.path;
+
+			//this.video.on('click', this, 'onClick');
+
+			on(this.domNode, 'click', this, 'onClick');
+		},
+
+		connect: function(){
+			this.subscriptions = topic.sub.multi({
+				"/video/play":		"play",
+				"/video/pause":		"pause",
+				"/video/seek":		"seek",
+				"/video/volume":	"setVolume",
+				"/video/restart":	"restart",
+				"/video/fullscreen": "fullscreen"
+			}, this);
+
+
+		},
+
+		crashTest: function(){
+			// summary:
+			// 		Test that the plugin is still working.
+			// 		I haven't been working with Silverlight long enough to know
+			// 		when it crashes. I do know that if you size it to something
+			// 		it doesn't like (usually bigger) it can crash the plugin.
+			if(this.crashTested) return;
+			this.crashTested = 1;
+			console.log('crash test....');
+			timer(this, function(){
+				try{
+					console.log('crash test:', this.getTime());
+				}catch(e){
+					this.timerHandle.pause();
+					console.error('Silverlight crashed.')
+				}
+			}, 500);
+		},
+
+		setupEvents: function(s){
+			// http://msdn.microsoft.com/en-us/library/system.windows.controls.mediaelement_events%28v=vs.95%29.aspx
+
+			this.timerHandle = timer(this, function(){
+				this.onTime(this.getTime(true));
+			}, Infinity, this.timeInterval, {paused:1});
+
+
+
+			var ae = function(eventName, fn){
+				this.video.node.AddEventListener(eventName, lang.bind(this, fn));
+				return lang.bind(this, "on"+eventName);
+			}.bind(this);
+
+			var csc = ae('CurrentStateChanged', function(){
+				var state = this.state = this.video.node.CurrentState;
+				log('state:', state)
+				if(state == "Playing"){ this.onPlay(); }
+				if(state == "Paused"){ this.onPause(); }
+				if(state == "Playing" || state == "Buffering" || state == "Opening") {
+					this.complete = false;
+					this.timerHandle.resume();
+					this.crashTest();
+				} else {
+					this.timerHandle.pause();
+				}
+				csc(state);
+			});
+
+			var bpc = ae('BufferingProgressChanged', function(){
+				bpc(this.video.node.BufferingProgress);
+			});
+			var dpc = ae('DownloadProgressChanged', function(){
+				dpc(this.video.node.DownloadProgress);
+			});
+			var me = ae('MediaEnded', function(){
+				this.complete = true;
+				this.onPause();
+				me();
+			});
+			var mo = ae('MediaOpened', function(){
+				var meta = {};
+				this.duration = meta.duration = this.video.node.NaturalDuration.Seconds;
+				this.naturalVideoHeight = meta.naturalVideoHeight = this.video.node.NaturalVideoHeight;
+				this.naturalVideoWidth = meta.naturalVideoWidth = this.video.node.NaturalVideoWidth;
+				mo(meta);
+			});
+			var mf = ae('MediaFailed', function(sender, args){
+				var errorObject = {
+					code:args.errorCode,
+					source:sender.Source, // the url trying to be played
+					message:errorMap.msg+args.errorCode+" - "+errorMap[args.errorCode]
+				};
+				mf(errorObject);
+			});
+
+			// obvious difficulty connecting to this event...
+			//this.video.ctx.onFullScreenChange = lang.bind(this, function(){
+			this.video.ctx.onFullScreenChange = lang.bind(this, function(){
+				this.isFullscreen = this.video.ctx.FullScreen;
+				if(this.isFullscreen){
+					this.wasWidth = this.width;
+					this.wasHeight = this.height;
+					this.width = window.screen.width;
+					this.height = window.screen.height;
+					this.showControls();
+				}else{
+					this.width = this.wasWidth;
+					this.height = this.wasHeight;
+					if(this.hasHtmlControls) this.hideControls();
+				}
+				this.resizeElements();
+				this.onFullscreen();
+			});
+
+			this.video.node.AutoPlay = this.autoplay;
+
+		},
+
+		onDownloadProgressChanged: function(p){
+			//console.info("DownloadProgressChanged", s);
+			this.onDownload(p);
+		},
+		onMediaEnded: function(){
+			console.info("MediaEnded");
+			this.onComplete();
+		},
+		onBufferingProgressChanged: function(/* Float */f){
+			console.info("BufferingProgressChanged", f);
+			this.onBuffer(f);
+		},
+
+		onMediaOpened: function(meta){
+			console.info("MediaOpened", meta);
+			this.centerVideo();
+			this._onmeta(meta);
+
+			/*
+			    Attributes
+				AudioStreamCount
+				AudioStreamIndex
+				BufferingProgress
+				DownloadProgress
+				Markers
+				NaturalDuration
+				NaturalVideoHeight
+				NaturalVideoWidth
+				Position
+			*/
+		},
+
+		onMediaFailed: function(e){
+			console.error("MediaFailed::", e);
+			console.timeEnd("time to fail"); // yikes! 500ms!
+			this.onError(e);
+		},
+
+		onCurrentStateChanged: function(state){
+			console.info("CurrentState", state);
+			if(state == 'Opening'){
+				this.videoReady = false;
+			}else{
+				this.videoReady = true;
+			}
+			this.onStatus(state.toLowerCase());
+		},
+
+
+
+
+
+		setVideo: function(path, noPlay){
+			if(path) this.path = path;
+			if(!isReady(this, 'video')) return;
+			this.complete = false;
+			this.video.node.Source = this.path;
+			if(!noPlay && this.autoplay){
+				on.once(this, 'onMediaOpened', this, 'play');
+			}
+		},
+
+		fullscreen: function(){
+			// only callable by silverlight controls
+			this.back.ctx.FullScreen = !this.isFullscreen;
+		},
+
+		play: function(){
+			if(!isReady(this, 'videoReady')) return;
+			if(this.complete){ this.video.node.Position = '0:0:0'; }//seriously?
+			log('play');
+			try{
+			this.video.node.Play();
+			}catch(e){
+				console.error(e)
+			}
+		},
+		hide: function(){
+			// can't actually hide a Flash video.
+			// this is here to maintain a common signature.
+			this.pause();
+		},
+		show: function(){
+			this.play();
+		},
+		pause: function(){
+			log('play');
+			this.video.node.Pause();
+		},
+
+		setVolume: function(/* Float */ p){
+			this.volume = this.video.node.Volume = p;
+		},
+
+		getTime: function(rounded){
+			if(rounded){
+				return Math.round(this.video.node.Position.Seconds*10)/10;
+			}else{
+				return this.video.node.Position.Seconds;
+			}
+		},
+
+		seek: function(cmd){
+			var diff = 0;
+			if(cmd == "start"){
+				this.wasPlaying = this.state == "Playing";
+				if(!this.hasPlayed){
+					topic.pub("/video/on/play", this.getMeta());
+				}
+				this.timeWas = this.getTime();
+				this.pause();
+
+			}else if(cmd == "end"){
+				if(this.wasPlaying){
+					this.play();
+				}else{
+					this.onPause();
+				}
+				diff = this.getTime() - this.timeWas;
+			}else{
+				var time = cmd * this.duration
+				var tc = lang.timeCode(time, 'h:m:s.m');
+				//console.log('seek:', cmd, time, tc);
+				this.video.node.Position = tc;
+			}
+
+			var m = this.getMeta();
+			m.type = cmd || 'seeking';
+			m.change = diff;
+			topic.pub('/video/on/seek', m);
+
+		},
+
+		resizeElements: function(){
+			this.back.size({width:this.width, height:this.height});
+			this.centerVideo();
+			this.controls.onFullscreen(this.isFullscreen);
+		},
+
+		showControls: function(){
+			this.controls.show();
+		},
+
+		hideControls: function(){
+			this.controls.hide();
+		},
+
+		centerVideo: function(){
+
+			var mw = this.naturalVideoWidth;
+			var mh = this.naturalVideoHeight;
+			var cw = this.isFullscreen ? window.screen.width  : this.width;
+			var ch = this.isFullscreen ? window.screen.height : this.height;
+			var ma = mh/mw;
+			var ca = ch/cw;
+			var x, y, w, h;
+
+			var videoIsSmaller = mw>cw || mh>ch;
+
+			if(this.useNaturalSize && !this.isFullscreen){
+				log('actual size');
+				x = (cw-mw)/2;
+				y = (ch-mh)/2;
+				w = this.naturalVideoWidth;
+				h = this.naturalVideoHeight;
+				this.video.size({width:this.naturalVideoWidth,height:this.naturalVideoHeight});
+
+			}else if(this.isFullscreen || videoIsSmaller){
+				log('video is smaller (or fullscreen');
+				if(ma == ca){
+					// same
+					w = cw;
+					h = ch;
+					x = 0;
+					y = 0;
+				}else if(ca > ma){
+					// cn is taller
+					w = cw;
+					x = 0;
+					h = mh * cw/mw;
+					y = (ch - h)/2;
+
+				}else{
+					// cn is wider
+					h = ch;
+					y = 0;
+					w = mw * ch/mh
+					x = (cw - w)/2;
+				}
+
+
+
+			}else{
+				// tried making the video larger, using an even amount, 1.5, 2.0, etc.
+				// didn't work. 1.5 still crashed it. It was pretty large, though, 940 x 500 or something.
+				//
+				/*log('scale video up');
+
+				var sizes = [1, 1.5, 2, 2.5, 3];
+				var size = sizes[0];
+				for(var i=0; i< sizes.length;i++){
+					var s = sizes[i];
+					log('size:', s, mw*s, mh*s);
+					if(mw*s > cw || mh*s > ch) break;
+					size = sizes[i];
+				}
+
+				w = mw*size;
+				h = mh*size;*/
+
+				w = this.naturalVideoWidth;
+				h = this.naturalVideoHeight;
+				x = (cw-w)/2;
+				y = (ch-h)/2;
+
+
+			}
+			log("center:", x, y, w, h, 'container:', cw, ch, 'media:', mw, mh, 'fullscreen', this.isFullscreen);
+			this.video.size({width:w,height:h});
+			this.video.position({x:x,y:y});
+			///
+		},
+
+		getMeta: function(){
+
+			var m = this.meta || {};
+			var time = this.getTime();
+			var dur = this.duration;
+			var p = time / dur;
+			var rem = Math.max(0, dur-time);
+			time = time.toFixed(1);
+
+			return {
+				p:p,
+				time: time,
+				duration:dur,
+				remaining:rem,
+				isAd:false
+			}
+		},
+
+		onLoad: function(/* Object */ player){
+			// summary:
+			// 		Fired when the player has loaded
+			// 		NOT when the video has loaded
+			//
+		},
+
+		onDownload: function(/* Float */percent){
+			// summary:
+			//		Fires the amount of that the media has been
+			//		downloaded. Number, 0-1
+			topic.pub("/video/on/download", {p:percent});
+		},
+
+		onClick: function(/* Object */ evt){
+			// summary:
+			// 		TODO: Return x/y of click
+			// 		Fires when the player is clicked
+			// 		Could be used to toggle play/pause, or
+			// 		do an external activity, like opening a new
+			//		window.
+			topic.pub("/video/on/click");
+		},
+
+		onPreMeta: function(){
+			topic.pub("/video/on/premeta", this.getMeta());
+		},
+
+		_onmeta: function(m){
+			this.meta = m;
+			this._metaHandle && this._metaHandle.remove();
+			if(!this.premetaFired){
+				this.premetaFired = 1;
+				this.onPreMeta(m);
+			}
+
+			this._metaHandle = timer(this, function(){
+				this.onMeta(m);
+			}, 30);
+		},
+
+		onMeta: function(){
+			topic.pub("/video/on/meta", this.getMeta());
+		},
+
+		onTime: function(/* Float */ time){
+			// summary:
+			//		The position of the playhead in seconds
+			topic.pub("/video/on/frame", this.getMeta());
+		},
+
+		onStart: function(/* Object */ data){
+			// summary:
+			// 		Fires when video starts
+			topic.pub("/video/on/start", this.getMeta());
+		},
+
+		onPlay: function(/* Object */ data){
+			// summary:
+			// 		Fires when video starts or resumes
+			this.hasPlayed = true;
+			topic.pub("/video/on/play", this.getMeta());
+		},
+
+		onPause: function(/* Object */ data){
+			// summary:
+			// 		Fires when video stops
+			topic.pub("/video/on/pause", this.getMeta());
+		},
+
+
+		onComplete: function(){
+			this.complete = true;
+			this.onPause();
+			this.hasPlayed = false;
+			topic.pub("/video/on/complete", this.getMeta());
+
+		},
+
+		onBuffer: function(/* Boolean */ isBuffering){
+			// summary:
+			//		Fires when buffering or when buffering
+			//		has finished
+		},
+
+		onError: function(/* Object */ errorObject){
+			// summary:
+			// 		Fired when the player encounters an error
+		},
+
+		onStatus: function(/* String */status){
+			// summary:
+			// 		The status of the video from the SWF
+			// 		playing, stopped, bufering, etc.
+		},
+
+		onFullscreen: function(/* Boolean */ isFullscreen){
+			// summary:
+			// 		Fired when video toggles fullscreen
+			topic.pub("/video/on/fullscreen", isFullscreen);
+		},
+
+		onResize: function(){
+			// summary:
+			// 		Fired when video resizes, but not when it goes fullscreen
+		}
+	});
 
 });

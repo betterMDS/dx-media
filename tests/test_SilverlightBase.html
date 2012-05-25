@@ -29,7 +29,36 @@
 				"dx-media/silverlight/base"
 			], function(dojo, ready, sl){
 
-			new sl.Canvas({width:320, height:240}, 'test');
+			new sl.Canvas({width:320, height:240, onLoad: function(canvas){
+				console.log('canvas created')
+				
+				var rect = new sl.Rect({x:3,y:3,width:50,height:30, color:'#ffff00'}, canvas);
+
+				new sl.Ellipse({x:10, y:40}, canvas);
+
+				new sl.Text({x:60, y:10, text:'Here is some text'}, canvas);
+
+				new sl.Path({
+					nofill:1,
+					data:[
+						{x:200, y:10, t:'M'},
+						{x:180, y:50, t:'L'},
+						{x:220, y:80, t:'C', x1:100, y1:50, x2:190, y2:100},
+						{x:160, y:130, t:'L'}
+					]
+				}, canvas);
+
+
+				var btn = new sl.Rect({x:3,y:100,radius:5,width:70,height:24, cursor:1, color:'#eeeeee'}, canvas);
+				new sl.Text({x:10, y:3, text:'click me'}, btn);
+
+				btn.on('click', function(){
+					console.log('clicked!')
+				});
+
+			}}, 'test');
+
+
 
 		});
 	</script>
