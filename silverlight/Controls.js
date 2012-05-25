@@ -1,0 +1,5 @@
+define([
+	'dojo'
+], function(dojo){
+
+});

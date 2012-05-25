@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+    <title>Test dx-media Silverlight Base</title>
+	<style>
+		html, body{
+			width:640px;
+			margin:0;
+			padding:0;
+			background:#ccc;
+		}
+		#player{
+			width:640px;
+			height:360px;
+			position:relative;
+		}
+
+	</style>
+    <script>
+        dojoConfig = {
+			async:1
+		};
+    </script>
+    <script src="../../dojo/dojo.js"></script>
+	<script>
+		require([
+				"dojo",
+				"dojo/domReady!",
+				"dx-media/silverlight/base"
+			], function(dojo, ready, sl){
+
+			new sl.Canvas({width:320, height:240}, 'test');
+
+		});
+	</script>
+</head>
+<body>
+	<h1>Test dx-media Silverlight Base</h1>
+    <div id="test"></div>
+</body>
+</html>
