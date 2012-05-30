@@ -1,10 +1,10 @@
 
-.dxPlayerControls{
+.dxControlbar{
 	position:absolute;
 	left:0;
 	height:27px;
 	width:100%;
-	padding:3px;
+	padding:0px;
 	bottom:0px;
 	background: -moz-linear-gradient(top, #37383e 0%, #2d2d2d 49%, #222222 51%);
 	background: -webkit-linear-gradient(top, #37383e 0%, #2d2d2d 49%, #222222 51%);
@@ -13,27 +13,27 @@
 	font-size:11px;
 	color:#fff;
 }
-.dxPlayerControls .left{
+.dxControlbar .left{
 	text-align:left;
 	position:absolute;
 	width:50%;
 	left:8px;
-	top:4px;
+	top:1px;
 }
-.dxPlayerControls .right{
+.dxControlbar .right{
 	text-align:right;
 	position:absolute;
 	width:50%;
 	right:8px;
 	top:4px;
 }
-.dxPlayerControls .left a, .dxPlayerControls .right a{
+.dxControlbar .left a, .dxControlbar .right a{
 	display:inline-block;
 }
-.dxPlayerControls .right .dxIcon{
+.dxControlbar .right .dxIcon{
 	margin-right:3px;
 }
-.dxPlayerControls .left .dxIcon{
+.dxControlbar .left .dxIcon{
 	margin-left:3px;
 }
 

@@ -1,19 +1,19 @@
 define([
 	'dojo/_base/declare',
-	'dojo/sniff',
 	'dijit/_WidgetBase',
 	'dijit/_TemplatedMixin',
 	'dx-alias/dom',
 	'dx-alias/string',
 	'dx-alias/lang',
 	'dx-alias/on',
+	'dx-alias/has',
 	'dx-alias/log'
-],function(declare, has, _WidgetBase, _TemplatedMixin, dom, string, lang, on, logger){
+],function(declare, _WidgetBase, _TemplatedMixin, dom, string, lang, on, has, logger){
 	//
 	//	summary:
 	//		An HTML5 Video player designed to work spcifically on mobile devices.
 	//
-	var log = logger('VMO', 1);
+	var log = logger('MOV', 1);
 	var showing = 1;
 
 	var TYPES = {
@@ -24,26 +24,29 @@ define([
 
 	var Mobile = declare("dx-media.mobile.Video", [_WidgetBase, _TemplatedMixin], {
 
-		templateString:'<video class="${baseClass} dxMobileVideo" src="${src}" >',
-		baseClass:'',
+		templateString:'<video class="${baseClass}" src="${src}" ${attributes}>',
+		baseClass:'dxMobileVideo',
 		width:0,
 		height:0,
 		poster:"",
 		src:"",
+		attributes:'', // additional HTML5 attributes to add to the node
 
 		constructor: function(/*Object*/options, node){
 
 			// A properly formed video tag works fine out of the gate.
 			if(node){
-				node = dom.byId(node);
-				if(node.getAttribute('data-dojo-type')){
-					var sources = dom.byTag('source', node);
-					if(sources && sources.length){
-						this.findSource(sources);
-						this.src = this.sources[0].src;
-					}
-				}
+				this.src = this.findSource(dom.byId(node));
+				log('src:', this.src);
 			}
+
+			if(this.width){
+				this.attributes = ['width="'+this.width+'"', 'height="'+this.height+'"'];
+			}
+		},
+
+		postMixInProperties: function(){
+			if(Array.isArray(this.attributes)) this.attributes = this.attributes.join(' ');
 		},
 
 		postCreate: function(){
@@ -77,6 +80,14 @@ define([
 			this.imageAspect = w / h;
 		},
 
+		play: function(){
+			// overwrite me when extending
+		},
+
+		pause: function(){
+			// overwrite me when extending
+		},
+
 		onSize: function(size){
 
 		},
@@ -99,21 +110,41 @@ define([
 		},
 
 		deriveType: function(filename){
+			log('deriveType', filename)
 			if(!filename) return null;
 			var ext = lang.last(filename.split('.'));
 			return TYPES[ext];
 		},
 
-		findSource: function(sources){
+		findSource: function(node){
+			console.log('findSource...', sources);
+
+			if(dom.prop(node, 'src')) return dom.prop(node, 'src');
+
+			var sources = dom.byTag('source', node);
+			log('sources:', sources)
+			if(!sources || !sources.length) return null;
+
 			this.sources = [];
 			sources.forEach(function(node){
 				this.sources.push({
-					src:dom.get(node, 'src'),
-					type:dom.get(node, 'type') || this.deriveType(dom.get(node, 'src'))
+					node:node,
+					src:dom.prop(node, 'src'),
+					type:dom.prop(node, 'type') || this.deriveType(dom.prop(node, 'src'))
 				});
+				console.log('this.sources', this.sources);
 			}, this);
-			console.log('this.sources:', this.sources);
-			return this.sources;
+			console.log('findSource:', this.sources);
+
+			var src;
+			this.sources.some(function(s){
+				if(has(s.type)){
+					src = s.src;
+					return true;
+				}
+				return false;
+			});
+			return src;
 		},
 
 		show: function(){
@@ -124,6 +155,7 @@ define([
 
 		hide: function(){
 			if(!showing) return;
+			this.pause();
 			showing = 0;
 			dom.hide(this.domNode);
 		}

@@ -1,14 +1,16 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="en">
 <head>
-    <title>Test dx-media Controls</title>
+    <title>Test dx-media HTML5 Video</title>
+	<link href="../resources/dxHtml5Video.css" rel="stylesheet" />
 	<link href="../resources/dxControlbar.css" rel="stylesheet" />
 	<style>
 		html, body{
 			width:640px;
-			margin:0;
+			margin:10;
 			padding:0;
 			background:#ccc;
+			font-family: sans-serif;
 		}
 		#player{
 			width:640px;
@@ -19,7 +21,8 @@
 	</style>
     <script>
         dojoConfig = {
-			async:1
+			async:1,
+			isDebug:true
 		};
     </script>
     <script src="../../dojo/dojo.js"></script>
@@ -28,7 +31,10 @@
 				"dojo",
 				"dojo/parser",
 				"dojo/domReady!",
+				"dijit/registry",
+				"dx-alias/on",
 				"dx-alias/shim",
+				"dx-media/Html5/Video",
 				"dx-media/controls/Controlbar",
 				"dx-media/controls/elements/Play",
 				"dx-media/controls/elements/Facebook",
@@ -41,34 +47,44 @@
 				"dx-media/controls/elements/Progress",
 				"dx-media/controls/elements/Fullscreen",
 				"dx-media/controls/elements/Volume"
-			], function(dojo, parser){
+			], function(dojo, parser, ready, registry, on){
 
 			parser.parse();
 
-		});
+			var vid = registry.byId('video');
 
+			console.log('video:', vid)
+
+			on(vid, 'onPlay', function(){
+				console.log('play!');
+			});
+			on(vid, 'onPause', function(){
+				console.log('pause!');
+			});
+			on(vid, 'onComplete', function(){
+				console.log('complete!');
+			});
+		});
 	</script>
 </head>
 <body>
-
+	<h1>Test dx-media HTML5 Video</h1>
     <div id="player">
+		<video id="video" data-dojo-type="dx-media/Html5/Video" data-dojo-props="width:640, height:360">
+			<source src='./media/video/SightAndSound_sm.mp4'></source>
+			<source src='./media/video/SightAndSound.webm'></source>
+		</video>
 		<div data-dojo-type="dx-media/controls/Controlbar" data-dojo-props="width:640, height:360">
 			<div data-dojo-type="dx-media/controls/elements/Play"></div>
 			<div data-dojo-type="dx-media/controls/elements/Fullscreen"></div>
 			<div data-dojo-type="dx-media/controls/elements/Volume"></div>
-			<!--<div data-dojo-type="dx-media/controls/elements/FlexSpace">
-			-->
-
-				<div data-dojo-type="dx-media/controls/elements/Time"></div>
-				<div data-dojo-type="dx-media/controls/elements/Progress" data-dojo-props='width:100'></div>
-				<div data-dojo-type="dx-media/controls/elements/Duration"></div>
-
+			<div data-dojo-type="dx-media/controls/elements/Time"></div>
+			<div data-dojo-type="dx-media/controls/elements/Progress" data-dojo-props='width:100'></div>
+			<div data-dojo-type="dx-media/controls/elements/Duration"></div>
 			<div data-dojo-type="dx-media/controls/elements/Embed"></div>
 			<div data-dojo-type="dx-media/controls/elements/Facebook"></div>
 			<div data-dojo-type="dx-media/controls/elements/Twitter"></div>
 		</div>
 	</div>
-
-
 </body>
 </html>

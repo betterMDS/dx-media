@@ -9,15 +9,23 @@ define([
 	"dx-alias/log",
 	"dx-timer/timer"
 ], function(declare, _WidgetBase, _TemplatedMixin, _Container, dom, on, lang, logger, timer){
+	//	summary:
+	//		Media player container widget for controls (play button, etc).
+	//
+	var log = logger('CON', 0);
 
-	var log = logger('CON', 1);
+	console.warn('Controlbar')
 
 	return declare('dx-media.controls.Controlbar', [_WidgetBase, _TemplatedMixin, _Container], {
 
 		templateStyle:'dxStyleIcon',
-		baseClass:'dxPlayerControls',
+		baseClass:'dxControlbar',
 
 		templateString:'<div class="${baseClass} ${templateStyle}"><div class="left" data-dojo-attach-point="containerNode"></div><div class="right" data-dojo-attach-point="containerRight"></div></div>',
+
+		constructor: function(){
+			console.warn('Controlbar load')
+		},
 
 		postMixInProperties: function(){
 			//this.baseClass = 'dxPlayerMobileControls';
@@ -28,16 +36,12 @@ define([
 		gap:5,
 
 		postCreate: function(){
-			on(this.domNode, 'click', function(){
-				log('clicked control bar');
-			});
-			on(document, 'click', function(){
-				log('clicked doc');
-			});
+
 		},
 
-		onClick: function(w){
-			//
+		onClick: function(/*Dijit*/widget){
+			//	summary:
+			//		Fires when one of the control bar buttons has been clicked
 		},
 
 		addChildLeft: function(w){
