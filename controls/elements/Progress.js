@@ -13,10 +13,8 @@ define([
 
 
 		postCreate: function(){
-
-			dom.style(this.domNode, 'display', 'inline-block');
 			this.inherited(arguments);
-
+			dom.style(this.domNode, 'display', 'inline-block');
 		}
 	});
 

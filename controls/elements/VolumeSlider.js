@@ -7,7 +7,7 @@ define([
 	"dx-timer/timer"
 ], function(declare, _Slider, dom, lang, logger){
 
-	var log = logger('PLY', 1);
+	var log = logger('VSL', 0);
 
 	return declare('dx-media.controls.elements.VolumeSlider', [_Slider], {
 

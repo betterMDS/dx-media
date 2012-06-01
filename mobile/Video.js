@@ -13,7 +13,7 @@ define([
 	//	summary:
 	//		An HTML5 Video player designed to work spcifically on mobile devices.
 	//
-	var log = logger('MOV', 1);
+	var log = logger('MOV', 0);
 	var showing = 1;
 
 	var TYPES = {
@@ -117,7 +117,7 @@ define([
 		},
 
 		findSource: function(node){
-			console.log('findSource...', sources);
+			log('findSource...', sources);
 
 			if(dom.prop(node, 'src')) return dom.prop(node, 'src');
 
@@ -132,9 +132,9 @@ define([
 					src:dom.prop(node, 'src'),
 					type:dom.prop(node, 'type') || this.deriveType(dom.prop(node, 'src'))
 				});
-				console.log('this.sources', this.sources);
+				log('this.sources', this.sources);
 			}, this);
-			console.log('findSource:', this.sources);
+			log('findSource:', this.sources);
 
 			var src;
 			this.sources.some(function(s){

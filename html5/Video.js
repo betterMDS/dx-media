@@ -57,7 +57,6 @@ define([
 		},
 
 		connectEvents: function(){
-			log('connectEvents', has('iphone'))
 			if(has('iphone')) return;
 
 			this.connection = on.multi(this.domNode, {
@@ -65,7 +64,7 @@ define([
 				"pause": "onPause",
 				"progress": "onLoad",
 				"error": "onError",
-				"timeupdate": "onFrame",
+				"timeupdate": "_onFrame",
 				"ended": "onComplete",
 				"abort": "onAbort",
 				"empty": "onEmpty",
@@ -136,12 +135,12 @@ define([
 
 		reload: function(path){
 			on.once(this, "onMeta", this, function(){
-				this.video.currentTime = .1
-				this.video.play();
+				this.domNode.currentTime = .1
+				this.domNode.play();
 			});
 			this.pause();
-			this.video.src = path;
-			this.video.load();
+			this.domNode.src = path;
+			this.domNode.load();
 		},
 
 		restart: function(){
@@ -178,8 +177,8 @@ define([
 			// without the pause, Safari crashes:
 			timer(this, "onPlay", 1);
 			timer(this, function(){
-				this.video.currentTime = .1;
-				this.video.play();
+				this.domNode.currentTime = .1;
+				this.domNode.play();
 			}, 260);
 		},
 
@@ -214,14 +213,13 @@ define([
 				this.onResize();
 			}
 
-			console.log("META LOADED", this.duration);
 			if(!this.premetaFired){
 				this.premetaFired = 1;
 				this.onPreMeta(m);
 			}
 
 			this._metaHandle = timer(this, function(){
-				this.onMeta(m);
+				this.onMeta(this.getMeta());
 			}, 30);
 		},
 
@@ -234,9 +232,13 @@ define([
 		},
 
 
+		_onFrame: function(){
+			var m = this.getMeta();
+			if(m.duration) this.onFrame(m);
+		},
 
-		onFrame: function(evt){
-			topic.pub("/video/on/frame", this.getMeta());
+		onFrame: function(meta){
+			topic.pub("/video/on/frame", meta);
 		},
 
 		onLoad: function(evt){
@@ -267,8 +269,8 @@ define([
 					//console.log("height ca:", o.h/o.w, "va:", this.videoAspect)
 					v.width = o.w;
 					v.height = o.w/this.videoWidth*this.videoHeight;
-					v.style.top = (o.h-this.video.height)/2+"px"//"0";// "50%";
-					v.style.marginTop = "0";//"-" + (this.video.height/2) + "px";
+					v.style.top = (o.h-this.domNode.height)/2+"px";
+					v.style.marginTop = "0";
 				}else{
 					// go by width or exact size
 					v.height = o.h;
@@ -277,9 +279,6 @@ define([
 					v.style.top = 0;
 				}
 			}
-
-
-			//console.log("window:", o.w, o.h, "vid:", this.videoWidth, this.videoHeight, "act:", this.video.width, this.video.height, "marg:", v.style.marginTop, "VA:", this.videoAspect)
 		},
 
 		onFullscreen: function(evt){
@@ -290,15 +289,15 @@ define([
 		},
 		onClick: function(){
 			log(' --------------------- CLICK');
-			this.video.isAd = this.isAd;
-			topic.pub("/video/on/click", this.video);
+			this.domNode.isAd = this.isAd;
+			topic.pub("/video/on/click", this.domNode);
 		},
 		onAbort: function(){ log("abort"); this.onPause(); },
 		onEmpty: function(){ log("empty"); },
 		onEmptied: function(){ log("emptied"); },
 		onWaiting: function(){ log("waiting"); },
 		onSeeked: function(){
-			if(this.complete && !this.video.paused){
+			if(this.complete && !this.domNode.paused){
 				this.onRestart();
 			}
 		},
@@ -347,7 +346,7 @@ define([
 				if(!this.hasPlayed){
 					topic.pub("/video/on/play", this.meta);
 				}
-				this.timeWas = this.video.currentTime;
+				this.timeWas = this.domNode.currentTime;
 				this.pause();
 			}else if(cmd === "end"){
 				//console.warn('SEEK START, [played:', this.hasPlayed, 'wasPlaying', wasPlaying);
@@ -387,12 +386,12 @@ define([
 
 		setVideo: function(path, isAd){
 			this.isAd = isAd;
-			log("Video.setVideo:", path, ' == ', this.video.src);
+			log("Video.setVideo:", path, ' == ', this.domNode.src);
 
-			if(this.domNode && this.domNode.src && string.urlToObj(path).filename == string.urlToObj(this.video.src).filename){
+			if(this.domNode && this.domNode.src && string.urlToObj(path).filename == string.urlToObj(this.domNode.src).filename){
 				log('restart current video');
 				this.restart();
-			}else if(!this.video.src){
+			}else if(!this.domNode.src){
 				log('setting for the first time...')
 				this.domNode.src = path;
 				timer(this, 'play', 200, {debug:1});

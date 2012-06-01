@@ -1,14 +1,13 @@
 define([
 	"dojo/_base/declare",
-	"dijit/_WidgetBase",
-	"dijit/_TemplatedMixin",
+	"./_Base",
 	"dx-alias/string",
 	"dx-alias/topic",
 	"dx-alias/dom",
 	"dx-alias/log"
-], function(declare, _WidgetBase, _TemplatedMixin, string, topic, dom, logger){
+], function(declare, _Base, string, topic, dom, logger){
 
-	var log = logger('_BT', 1);
+	var log = logger('_BT', 0);
 
 	var _groups = {};
 	var _widgets = {};
@@ -25,7 +24,7 @@ define([
 	});
 
 
-	return declare('dx-media.controls.elements._Button', [_WidgetBase, _TemplatedMixin], {
+	return declare('dx-media.controls.elements._Button', [_Base], {
 
 		templateString:'<div class="dxButton ${buttonClass}" data-dojo-attach-event="onclick:onClick">${innerTemplate}</div>',
 		innerTemplate:'',
@@ -43,16 +42,10 @@ define([
 		postCreate: function(){
 			var p = this.getParent();
 			this.templateStyle = p.templateStyle;
-
-			if(this.align == 'right'){
-				p.addChildRight(this);
-			}else{
-				p.addChildLeft(this);
-			}
-
 			if(this.radioGroup){
 				addRadio(this);
 			}
+			this.inherited(arguments);
 		},
 
 		select: function(/*Boolean?*/selected){

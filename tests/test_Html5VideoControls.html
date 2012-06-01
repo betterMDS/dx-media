@@ -33,27 +33,20 @@
 				"dojo/domReady!",
 				"dijit/registry",
 				"dx-alias/on",
+				"dx-media/controls/VideoControl",
+
 				"dx-alias/shim",
 				"dx-media/Html5/Video",
+				"dx-media/Html5/Preview",
 				"dx-media/controls/Controlbar",
-				"dx-media/controls/elements/Play",
-				"dx-media/controls/elements/Facebook",
-				"dx-media/controls/elements/Twitter",
-				"dx-media/controls/elements/Embed",
-				"dx-media/controls/elements/FlexSpace",
-				"dx-media/controls/elements/Time",
-				"dx-media/controls/elements/Duration",
-				"dx-media/controls/elements/Status",
-				"dx-media/controls/elements/Progress",
-				"dx-media/controls/elements/Fullscreen",
-				"dx-media/controls/elements/Volume"
-			], function(dojo, parser, ready, registry, on){
+				"dx-media/controls/elements/all"
+			], function(dojo, parser, ready, registry, on, VideoControl){
 
 			parser.parse();
 
 			var vid = registry.byId('video');
 
-			console.log('video:', vid)
+			new VideoControl('video', 'controls');
 
 			on(vid, 'onPlay', function(){
 				console.log('play!');
@@ -74,7 +67,8 @@
 			<source src='./media/video/SightAndSound_sm.mp4'></source>
 			<source src='./media/video/SightAndSound.webm'></source>
 		</video>
-		<div data-dojo-type="dx-media/controls/Controlbar" data-dojo-props="width:640, height:360">
+		<div data-dojo-type="dx-media/Html5/Preview" data-dojo-props="src:'media/images/SightAndSound.jpg'"></div>
+		<div id="controls" data-dojo-type="dx-media/controls/Controlbar" data-dojo-props="width:640, height:360">
 			<div data-dojo-type="dx-media/controls/elements/Play"></div>
 			<div data-dojo-type="dx-media/controls/elements/Fullscreen"></div>
 			<div data-dojo-type="dx-media/controls/elements/Volume"></div>

@@ -9,7 +9,7 @@ define([
 	"dx-timer/timer"
 ], function(declare, has, _WidgetBase, _TemplatedMixin, dom, lang, logger){
 
-	var log = logger('TIP', 1);
+	var log = logger('TIP', 0);
 
 	var isIE = has('ie') < 9;
 
@@ -24,6 +24,10 @@ define([
 
 		// child: Dijit constructor Class
 		// 		A widget to be added to the tooltip
+		Child:null,
+
+		// child: Dijit constructor instance
+		// 		The widget that has been added to the tooltip
 		child:null,
 
 		// positionNode:DomNode
@@ -55,10 +59,10 @@ define([
 			}
 			if(!this.domNode.parentNode) document.body.appendChild(this.domNode);
 			this.render();
-			if(this.child){
+			if(this.Child){
 				this.containerNode = dom('div', 'dxTooltipContainer', this.domNode);
-				var w = new this.child();
-				this.containerNode.appendChild(w.domNode);
+				this.child = new this.Child();
+				this.containerNode.appendChild(this.child.domNode);
 			}
 		},
 

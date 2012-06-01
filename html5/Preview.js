@@ -10,7 +10,7 @@ define([
 	"dx-timer/timer"
 ], function(declare, connect, mobile, Img, dom, lang, on, logger, timer){
 
-	var log = logger('PRE', 0);
+	var log = logger('PRE', 1);
 
 	return declare('dx-media.html5.Preview', [Img], {
 
@@ -29,6 +29,10 @@ define([
 		onReady: function(){
 			log('ready', this.src, this.width, this.height, this.nativeWidth, this.nativeHeight);
 			this.imageAspect = this.nativeWidth / this.nativeHeight;
+			console.log('parent:', this.domNode.parentNode);
+			if(this.domNode.parentNode){
+				this.onSize(dom.box(this.domNode.parentNode));
+			}
 		},
 
 		onSize: function(size){

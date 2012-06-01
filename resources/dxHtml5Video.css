@@ -1,1 +1,9 @@
-.dxHtml5Video{}
+.dxHtml5Video{
+
+}
+.dxPlayerPreview{
+	position:absolute;
+	display:block;
+	top:0;
+	left:0;
+}

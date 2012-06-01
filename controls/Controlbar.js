@@ -14,8 +14,6 @@ define([
 	//
 	var log = logger('CON', 0);
 
-	console.warn('Controlbar')
-
 	return declare('dx-media.controls.Controlbar', [_WidgetBase, _TemplatedMixin, _Container], {
 
 		templateStyle:'dxStyleIcon',
@@ -24,7 +22,7 @@ define([
 		templateString:'<div class="${baseClass} ${templateStyle}"><div class="left" data-dojo-attach-point="containerNode"></div><div class="right" data-dojo-attach-point="containerRight"></div></div>',
 
 		constructor: function(){
-			console.warn('Controlbar load')
+			this.elements = [];
 		},
 
 		postMixInProperties: function(){
@@ -42,6 +40,11 @@ define([
 		onClick: function(/*Dijit*/widget){
 			//	summary:
 			//		Fires when one of the control bar buttons has been clicked
+			//log('clicked:', widget.name);
+		},
+
+		getElements: function(){
+			return this.elements;//.concat(this.getChildren())
 		},
 
 		addChildLeft: function(w){
@@ -71,7 +74,8 @@ define([
 
 		register: function(w){
 			w.name = lang.last(w.declaredClass.split('.'));
-			var widget = w;
+			var widget = w; // scoped
+			this.elements.push(w);
 			on(w, 'onClick', this, function(){
 				//log('click', widget.name);
 				this.onClick(widget);
