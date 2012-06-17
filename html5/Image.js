@@ -9,7 +9,7 @@ define([
 	'dx-alias/log'
 ], function(declare, _WidgetBase, _TemplatedMixin, lang, dom, on, timer, logger){
 
-	var log = logger('IMG', 0);
+	var log = logger('IMG', 1);
 
 	return declare('dx-media.html5.Image', [_WidgetBase, _TemplatedMixin], {
 
@@ -29,7 +29,6 @@ define([
 		onerror:null,
 		node:null,
 		type:"image", // or thumb
-		loaded: false,
 		isError:false,
 		showing:1,
 		loaded:0,

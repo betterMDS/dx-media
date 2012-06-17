@@ -44,6 +44,7 @@
 
 .dxButton{
 	display:inline-block;
+	cursor:pointer;
 }
 .dxIcon{
 	display:inline-block;
@@ -88,7 +89,7 @@
 	margin-top:2px;
 	border:0px solid #ff0000;
 	position:relative;
-	cursor:pointer;
+
 }
 .active, .hover, .normal{
 	position:absolute;
@@ -259,4 +260,27 @@
 	left:5px;
 	width:95%;
 	height:100%;
+}
+
+
+.dxScreenPlayButton{
+	position:absolute;
+	background:url(icons.png) no-repeat -280px 0;
+	width:110px;
+	height:110px;
+	left:50%;
+	top:40%;
+	margin-left:-55px;
+	margin-top:-55px;
+	cursor: pointer;
+}
+.dxScreenPlayButton:hover{
+	background-position: -280px -120px;
+}
+.dxScreenPlayButton.dxMuted{
+
+	background-position: -280px -240px;
+}
+.dxScreenPlayButton.dxMuted:hover{
+	background-position: -280px -360px;
 }

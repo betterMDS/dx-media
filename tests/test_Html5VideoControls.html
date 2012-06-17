@@ -42,11 +42,20 @@
 				"dx-media/controls/elements/all"
 			], function(dojo, parser, ready, registry, on, VideoControl){
 
-			parser.parse();
+			parser.parse().then(function(){
+				console.log('parsed')
+			}, function(e){
+				console.error('parse error', e)
+			});
 
 			var vid = registry.byId('video');
 
-			new VideoControl('video', 'controls');
+			new VideoControl({
+				video:'video',
+				controls:'controls',
+				preview:'preview',
+				screenButton:'screenButton'
+			});
 
 			on(vid, 'onPlay', function(){
 				console.log('play!');
@@ -67,7 +76,8 @@
 			<source src='./media/video/SightAndSound_sm.mp4'></source>
 			<source src='./media/video/SightAndSound.webm'></source>
 		</video>
-		<div data-dojo-type="dx-media/Html5/Preview" data-dojo-props="src:'media/images/SightAndSound.jpg'"></div>
+		<div id='preview' data-dojo-type="dx-media/Html5/Preview" data-dojo-props="src:'media/images/SightAndSound.jpg'"></div>
+		<div id='screenButton' data-dojo-type="dx-media/controls/elements/ScreenPlayButton"></div>
 		<div id="controls" data-dojo-type="dx-media/controls/Controlbar" data-dojo-props="width:640, height:360">
 			<div data-dojo-type="dx-media/controls/elements/Play"></div>
 			<div data-dojo-type="dx-media/controls/elements/Fullscreen"></div>

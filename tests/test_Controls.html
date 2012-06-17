@@ -33,7 +33,17 @@
 				"dx-media/controls/elements/all"
 			], function(dojo, parser){
 
-			parser.parse();
+			cb = function(data){
+				console.log('data', data, d.isRejected());
+			}
+			doError = function(e){
+				console.error('doError:', e);
+			}
+			var d = parser.parse();
+			d.then(
+				cb
+				,doError
+			)
 
 		});
 

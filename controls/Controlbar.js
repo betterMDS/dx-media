@@ -26,6 +26,7 @@ define([
 		},
 
 		postMixInProperties: function(){
+		//	foo  = bar
 			//this.baseClass = 'dxPlayerMobileControls';
 		},
 

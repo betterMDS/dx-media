@@ -1,12 +1,11 @@
 define([
 	"dojo/_base/declare",
-	"dijit/_WidgetBase",
-	"dijit/_TemplatedMixin",
+	"dx-alias/Widget",
 	"dx-alias/dom",
 	"dx-alias/on",
 	"dx-alias/log",
 	"dx-timer/timer"
-], function(declare, _WidgetBase, _TemplatedMixin, dom, on, logger, timer){
+], function(declare, Widget, dom, on, logger, timer){
 	//
 	//	summary:
 	//		A big play button that shows over the video screen to give the user
@@ -14,9 +13,9 @@ define([
 	//
 	var log = logger('SPB', 1);
 
-	return declare('dx-media.controls.elements.ScreenPlayButton', [_WidgetBase, _TemplatedMixin], {
+	return declare('dx-media.controls.elements.ScreenPlayButton', [Widget], {
 
-		templateString:'<div data-dojo-attach-point="buttonNode" class="dxScreenPlayButton"></div>',
+		templateString:'<div class="dxScreenPlayButton dxMuted"></div>',
 
 		postCreate: function(){
 			on(this.domNode, 'click', this, 'onClick');

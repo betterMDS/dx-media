@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+    <title>Deferred Test</title>
+	<link href="../resources/dxControlbar.css" rel="stylesheet" />
+	<style>
+		html, body{
+			width:640px;
+			margin:0;
+			padding:0;
+			background:#ccc;
+		}
+		#player{
+			width:640px;
+			height:360px;
+			position:relative;
+		}
+
+	</style>
+    <script>
+        dojoConfig = {
+			async:1
+		};
+    </script>
+    <script src="../../dojo/dojo.js"></script>
+	<script>
+require([
+		"dojo/Deferred"
+	], function(Deferred){
+
+var test1 = function(){
+	var useError = 1	;
+	var getError = function(name, useThisError){
+		var msg = name + ' error';
+		return useError || useThisError
+			?
+			function(e){ console.error(msg); d.reject(e); }
+			:
+			null;
+	}
+
+	var doZap = function(){
+		console.log('zap');
+	}
+
+	var doBar = function(){
+		throw new Error('BAR ERROR');
+		console.log('bar');
+	}
+
+	var doFoo = function(){
+		console.log('foo');
+	}
+
+	var doBuz = function(){
+		console.log('buz');
+	}
+
+	var d = new Deferred();
+
+	var p = d
+	.then(
+		  doZap,
+			getError('zap'), 0)
+
+	.then(
+		doBar, // throws an error
+		function(e){ console.error('e bar'); d.reject(e); }) // does not get called
+
+	.then(
+		  doFoo,
+		  getError('foo'), 0)
+
+	.then(
+		  doBuz,
+		  getError('buz'), 0)
+
+
+	d.resolve();
+}
+
+var test2 = function(){
+	var d = new Deferred()
+
+	var p = d.then(
+		function(){
+			throw new Error();
+		},
+		function(e){
+			console.error('error happened');
+			throw new Error();
+			return e
+		}
+	)
+	var p2 = d.resolve();
+
+	console.log('rejected:', p.isRejected(), 'fullfilled:', p.isFulfilled()); // not correct
+	/*p.then(
+		function(){
+			console.log('post resolve')
+		},
+		function(){
+			console.error('post resolve error happened')
+		}
+	)*/
+}
+test2()
+
+});
+
+	</script>
+</head>
+<body>
+
+</body>
+</html>

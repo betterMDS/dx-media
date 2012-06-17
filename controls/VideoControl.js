@@ -1,11 +1,11 @@
 define([
 	'dojo/_base/declare',
-	'dijit/_WidgetBase',
 	'dijit/registry',
+	'dx-alias/Widget',
 	'dx-alias/on',
 	'dx-alias/lang',
 	'dx-alias/log'
-],function(declare, _WidgetBase, registry, on, lang, logger){
+],function(declare, registry, Widget, on, lang, logger){
 
 	var log = logger('VC', 1);
 
@@ -13,14 +13,19 @@ define([
 	// 	Make this a widget... problem is it has no DOM and confuses Dijit and
 	// 	says ID already exists (for some other widget apparently)
 	//
-	return declare('dx-media.controls.VideoControl', [], {
+	return declare('dx-media.controls.VideoControl', [Widget], {
+
 		controls:null,
 		video:null,
 		preview:null,
-		constructor: function(video, controls, preview){
-			this.controls = this.getObject(controls);
-			this.video = this.getObject(video);
-			this.preview = this.getObject(preview);
+		screenButton:null,
+
+		postMixInProperties: function(){
+
+			['controls', 'video', 'preview', 'screenButton'].forEach(function(str){
+				this[str] = this.getObject(str);
+			}, this);
+
 			this.id = lang.uid('VideoControl');
 
 			this._connections = [];
@@ -33,14 +38,6 @@ define([
 
 		getObject: function(obj){
 			return typeof obj == 'string' ? registry.byId(obj) : obj;
-		},
-
-		connectEvents: function(){
-			this._connections.forEach(function(handle){ handle.resume(); }, this);
-		},
-
-		disconnectEvents: function(){
-			this._connections.forEach(function(handle){ handle.pause(); }, this);
 		},
 
 		init: function(){
@@ -78,15 +75,14 @@ define([
 				this.on(this.video, 'onFrame', this.map.Time, 'update');
 			}
 
-			if(this.preview){
-				
+			if(this.screenButton){
+				this.on(this.screenButton, 'onClick', this.video, 'play');
+				this.on(this.video, 'onPlay', this.screenButton, 'hide');
 			}
 
-
-		},
-
-		on: function(obj, event, ctx, method){
-			this._connections.push(on(obj, event, ctx, method));
+			if(this.preview){
+				this.on(this.video, 'onPlay', this.preview, 'hide');
+			}
 		}
 
 	});
