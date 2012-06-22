@@ -11,7 +11,7 @@ define([
 	//		A big play button that shows over the video screen to give the user
 	//		an obvious cue that the video is to be played.
 	//
-	var log = logger('SPB', 1);
+	var log = logger('SPB', 0);
 
 	return declare('dx-media.controls.elements.ScreenPlayButton', [Widget], {
 

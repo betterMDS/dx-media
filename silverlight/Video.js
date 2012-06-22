@@ -98,7 +98,7 @@ define([
 		},
 
 		onCanvasReady: function(sender){
-			log('onCanvasReady');
+			log(' --------------------- onCanvasReady');
 			if(this.wasReady) return;
 			this.wasReady = 1;
 			this.buildBack();
@@ -115,7 +115,7 @@ define([
 			timer(this, function(){
 				if(this.path) this.setVideo(this.path);
 			}, 100)
-			log('Video Ready.', this.path)
+			log('Video Built - HOOK UP HTML5 -------------------------- video source.', this.path)
 		},
 
 		buildBack: function(){
@@ -148,7 +148,7 @@ define([
 				"/video/play":		"play",
 				"/video/pause":		"pause",
 				"/video/seek":		"seek",
-				"/video/volume":	"setVolume",
+				"/video/volume":	"volume",
 				"/video/restart":	"restart",
 				"/video/fullscreen": "fullscreen"
 			}, this);
@@ -177,6 +177,7 @@ define([
 
 		setupEvents: function(s){
 			// http://msdn.microsoft.com/en-us/library/system.windows.controls.mediaelement_events%28v=vs.95%29.aspx
+			log(' ------------ setupEvents')
 
 			this.timerHandle = timer(this, function(){
 				this.onTime(this.getTime(true));
@@ -231,8 +232,6 @@ define([
 				mf(errorObject);
 			});
 
-			// obvious difficulty connecting to this event...
-			//this.video.ctx.onFullScreenChange = lang.bind(this, function(){
 			this.video.ctx.onFullScreenChange = lang.bind(this, function(){
 				this.isFullscreen = this.video.ctx.FullScreen;
 				if(this.isFullscreen){
@@ -322,9 +321,13 @@ define([
 		},
 
 		play: function(){
-			if(!isReady(this, 'videoReady')) return;
-			if(this.complete){ this.video.node.Position = '0:0:0'; }//seriously?
 			log('play');
+			if(!isReady(this, 'videoReady')){
+				//log('silverlight not ready')
+				return;
+			}
+			if(this.complete){ this.video.node.Position = '0:0:0'; }//seriously?
+
 			try{
 			this.video.node.Play();
 			}catch(e){
@@ -344,8 +347,8 @@ define([
 			this.video.node.Pause();
 		},
 
-		setVolume: function(/* Float */ p){
-			this.volume = this.video.node.Volume = p;
+		volume: function(/* Float */ p){
+			this.video.node.Volume = p;
 		},
 
 		getTime: function(rounded){
