@@ -8,7 +8,7 @@ define([
 	'dx-alias/log'
 ], function(declare, theme, sl, topic, lang, on, logger){
 
-	var log = logger('SLC', 1);
+	var log = logger('SLC', 0);
 	var
 		norm = theme.norm,
 		over = theme.over,
@@ -20,6 +20,7 @@ define([
 	return declare(null, {
 		width:0,
 		height:0,
+		video:null,
 
 		playing: 0,
 
@@ -39,25 +40,19 @@ define([
 
 			this.positionElements();
 
-			this.connect();
+			this.setupEvents();
 		},
 
-		connect: function(){
-			topic.sub.multi({
-				'/video/on/play':'onPlay',
-				'/video/on/pause':'onPause',
-				'/video/on/frame':'onFrame',
-				'/video/on/seek':'onFrame',
-				'/video/on/download':'onDownload',
-				'/video/on/meta':'onMeta'
-			}, this);
+		setupEvents: function(){
 
-			/*if(b.player && b.player.controls){
-				b.timer(this, function(){
-					on(b.player.controls, "onShowControls", this, 'showFullscreen');
-					on(b.player.controls, "onHideControls", this, 'hideFullscreen');
-				}, 1);
-			}*/
+			on.multi(this.video, {
+				'onPlay':'onPlay',
+				'onPause':'onPause',
+				'onProgress':'onProgress',
+				'onSeek':'onProgress',
+				'onDownload':'onDownload',
+				'onMeta':'onMeta'
+			}, this);
 		},
 
 		show: function(){
@@ -86,23 +81,28 @@ define([
 			// button is connected to this event
 		},
 
-		onFullscreen: function(isFullscreen){
+		onFullscreen: function(isFullscreen, usesNativeControls){
 			// called directly from sl.Video
 			if(isFullscreen){
+				this.show();
 				this.wasWidth = this.width;
 				this.wasHeight = this.height;
 				this.width = window.screen.width;
 				this.height = window.screen.height;
-
 			}else{
 				this.width = this.wasWidth;
 				this.height = this.wasHeight;
 			}
+
+			if(!isFullscreen && !usesNativeControls){
+				this.hide();
+			}
+
 			log('onFullscreen', this.width, this.wasWidth, this.height, this.wasHeight)
 			this.positionElements();
 		},
 
-		onFrame: function(meta){
+		onProgress: function(meta){
 			this.timeNode.setText({text:lang.timeCode(meta.time, 'mm_ss')});
 			this.durNode.setText({text:lang.timeCode(meta.remaining, 'mm_ss')});
 			this.progressNode.size({width:this.progressWidth * meta.p});
@@ -145,13 +145,13 @@ define([
 			this.progressHit.on('drag', this, function(e){
 				console.log('prog click', e.type, e.x);
 				if(e.type == 'up'){
-					topic.pub("/video/seek", "end");
+					this.video.seek("end");
 				}else{
 
-					if(e.type == 'down') topic.pub("/video/seek", "start");
-					var p = lang.minMax(e.x / this.progressWidth, 0, 1);
+					if(e.type == 'down') this.video.seek("start");
+					var p = lang.clamp(e.x / this.progressWidth, 0, 1);
 					this.updateProgress({p:p});
-					topic.pub("/video/seek", p);
+					this.video.seek(p);
 				}
 			});
 
@@ -225,9 +225,11 @@ define([
 			this.playBtn.on('click', this, function(evt, e2){
 				log('PLAY CLICK')
 				if(this.playing){
-					topic.pub("/video/pause");
-					topic.pub("/button/pause");
+					this.video.pause();
+					//topic.pub("/video/pause");
+					//topic.pub("/button/pause");
 				}else{
+					this.video.play();
 					topic.pub("/video/play");
 					topic.pub("/button/play");
 				}
@@ -290,8 +292,9 @@ define([
 				if(e.type == 'up'){
 
 				}else{
-					var p =  b.minMax( e.x / theme.volume.width );
+					var p =  lang.clamp( e.x / theme.volume.width );
 					this.updateVolume({p:p});
+					this.video.volume(p);
 				}
 			});
 		},
@@ -342,7 +345,7 @@ define([
 				this.fsBtn.fill(btnOver);
 			});
 			this.fsBtn.on('click', this, function(evt, e2){
-				topic.pub('/video/fullscreen');
+				this.video.fullscreen();
 			});
 		},
 

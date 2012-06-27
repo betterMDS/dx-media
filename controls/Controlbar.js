@@ -1,20 +1,19 @@
 define([
 	"dojo/_base/declare",
-	"dijit/_WidgetBase",
-	"dijit/_TemplatedMixin",
 	"dijit/_Container",
+	"dx-alias/Widget",
 	"dx-alias/dom",
 	"dx-alias/on",
 	"dx-alias/lang",
 	"dx-alias/log",
 	"dx-timer/timer"
-], function(declare, _WidgetBase, _TemplatedMixin, _Container, dom, on, lang, logger, timer){
+], function(declare, _Container, Widget, dom, on, lang, logger, timer){
 	//	summary:
 	//		Media player container widget for controls (play button, etc).
 	//
 	var log = logger('CON', 0);
 
-	return declare('dx-media.controls.Controlbar', [_WidgetBase, _TemplatedMixin, _Container], {
+	return declare('dx-media.controls.Controlbar', [Widget, _Container], {
 
 		templateStyle:'dxStyleIcon',
 		baseClass:'dxControlbar',
@@ -23,11 +22,6 @@ define([
 
 		constructor: function(){
 			this.elements = [];
-		},
-
-		postMixInProperties: function(){
-		//	foo  = bar
-			//this.baseClass = 'dxPlayerMobileControls';
 		},
 
 		_lftMargin:10,
@@ -45,7 +39,7 @@ define([
 		},
 
 		getElements: function(){
-			return this.elements;//.concat(this.getChildren())
+			return this.elements;
 		},
 
 		addChildLeft: function(w){

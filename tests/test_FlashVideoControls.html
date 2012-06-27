@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="en">
 <head>
-    <title>Test dx-media HTML5 Video</title>
+    <title>Test dx-media Flash Video</title>
 	<link href="../resources/dxHtml5Video.css" rel="stylesheet" />
 	<link href="../resources/dxControlbar.css" rel="stylesheet" />
 	<style>
@@ -17,6 +17,7 @@
 			height:360px;
 			position:relative;
 		}
+		
 
 	</style>
     <script>
@@ -43,41 +44,38 @@
 			], function(dojo, parser, ready, registry, on, VideoControl){
 
 			parser.parse().then(function(){
-				console.log('parsed');
+
+				setTimeout(function(){
+				var vid = registry.byId('video');
+
+				console.log('vid', vid);
+
+				new VideoControl({
+					video:'video',
+					controls:'controls',
+					preview:'preview',
+					screenButton:'screenButton'
+				});
+
+				}, 1);
+
 			}, function(e){
 				console.error('parse error', e)
 			});
 
-			var vid = registry.byId('video');
 
-			new VideoControl({
-				video:'video',
-				controls:'controls',
-				preview:'preview',
-				screenButton:'screenButton'
-			});
-
-			on(vid, 'onPlay', function(){
-				console.log('play!');
-			});
-			on(vid, 'onPause', function(){
-				console.log('pause!');
-			});
-			on(vid, 'onComplete', function(){
-				console.log('complete!');
-			});
 		});
 	</script>
 </head>
 <body>
-	<h1>Test dx-media HTML5 Video</h1>
+	<h1>Test dx-media Flash Video</h1>
     <div id="player">
-		<video id="video" data-dojo-type="dx-media/Html5/Video" data-dojo-props="width:640, height:360">
+		<video id="video" data-dojo-type="dx-media/flash/Video" data-dojo-props="width:640, height:360">
 			<source src='./media/video/SightAndSound_sm.mp4'></source>
 			<source src='./media/video/SightAndSound.webm'></source>
 		</video>
-		<div id='preview' data-dojo-type="dx-media/Html5/Preview" data-dojo-props="src:'media/images/SightAndSound.jpg'"></div>
-		<div id='screenButton' data-dojo-type="dx-media/controls/elements/ScreenPlayButton"></div>
+		<!--<div id='preview' data-dojo-type="dx-media/Html5/Preview" data-dojo-props="src:'media/images/SightAndSound.jpg'"></div>
+		<div id='screenButton' data-dojo-type="dx-media/controls/elements/ScreenPlayButton"></div>-->
 		<div id="controls" data-dojo-type="dx-media/controls/Controlbar" data-dojo-props="width:640, height:360">
 			<div data-dojo-type="dx-media/controls/elements/Play"></div>
 			<div data-dojo-type="dx-media/controls/elements/Fullscreen"></div>

@@ -1,8 +1,7 @@
 define([
 	'dojo/_base/declare',
 	'dojo/sniff',
-	'dijit/_WidgetBase',
-	'dijit/_TemplatedMixin',
+	'../mobile/Video',
 	'dx-alias/dom',
 	'dx-alias/string',
 	'dx-alias/lang',
@@ -13,7 +12,7 @@ define([
 	'./base',
 	'./theme',
 	'./Controls'
-],function(declare, has, _WidgetBase, _TemplatedMixin, dom, string, lang, on, topic, logger, timer, sl, theme, Controls){
+],function(declare, has, Mobile, dom, string, lang, on, topic, logger, timer, sl, theme, Controls){
 	//
 	//	summary:
 	//		An Silverlight Video player.
@@ -40,7 +39,7 @@ define([
 			return false;
 		}
 
-	return declare("dx-media.silverlight.Video", [_WidgetBase, _TemplatedMixin], {
+	return declare("dx-media.silverlight.Video", [Mobile], {
 
 		templateString:'<div class="${baseClass} dxSilverlightVideo" ></div>',
 		baseClass:'',
@@ -48,7 +47,7 @@ define([
 		y:0,
 		width:0,
 		height:0,
-		path:'',
+		//path:'',
 
 		timeInterval:100,
 		autoplay:true,
@@ -69,9 +68,7 @@ define([
 		windowless:true,
 		enableFrameRateCounter:false,
 
-		constructor: function(/*Object*/options, node){
-
-		},
+		renderer:'silverlight',
 
 		postCreate: function(){
 			this.hasHtmlControls = false; // TODO: really check for this
@@ -82,6 +79,10 @@ define([
 			log('stylesheet loaded, ready to build...');
 			if(this.inited) return;
 			this.inited = 1;
+			dom.style(this.domNode, {
+				height:'100%',
+				width:'100%'
+			});
 			if(!this.width){
 				var box = dom.box(this.domNode);
 				this.width = box.w;
@@ -105,17 +106,15 @@ define([
 			this.buildVideo();
 
 
-			this.controls = new Controls({width:this.width, height:this.height}, this.back);
-
-			if(this.hasHtmlControls) this.controls.hide();
+			this.nativeControls = new Controls({width:this.width, height:this.height, video:this}, this.back);
+			if(!this.controls) this.hideControls();
 
 			this.setupEvents();
-			this.connect();
 
 			timer(this, function(){
-				if(this.path) this.setVideo(this.path);
-			}, 100)
-			log('Video Built - HOOK UP HTML5 -------------------------- video source.', this.path)
+				if(this.src) this.setVideo(this.src);
+			}, 100);
+			console.warn('Video Built - HOOK UP HTML5 -------------------------- video source.', this.src)
 		},
 
 		buildBack: function(){
@@ -131,29 +130,12 @@ define([
 		},
 
 		buildVideo: function(){
-			log('Video source:', this.path, 'autoplay:', this.autoplay);
+			log('Video source:', this.src, 'autoplay:', this.autoplay);
 			// size and pos set by centerVideo()
 			// note video size slightly too big can crash the plugin
 			this.video = new sl.Media({}, this.back);
 			this.video.node.autoPlay = this.autoplay;
-			//if(this.path) this.video.node.Source = this.path;
-
-			//this.video.on('click', this, 'onClick');
-
 			on(this.domNode, 'click', this, 'onClick');
-		},
-
-		connect: function(){
-			this.subscriptions = topic.sub.multi({
-				"/video/play":		"play",
-				"/video/pause":		"pause",
-				"/video/seek":		"seek",
-				"/video/volume":	"volume",
-				"/video/restart":	"restart",
-				"/video/fullscreen": "fullscreen"
-			}, this);
-
-
 		},
 
 		crashTest: function(){
@@ -164,10 +146,10 @@ define([
 			// 		it doesn't like (usually bigger) it can crash the plugin.
 			if(this.crashTested) return;
 			this.crashTested = 1;
-			console.log('crash test....');
+			//console.log('crash test....');
 			timer(this, function(){
 				try{
-					console.log('crash test:', this.getTime());
+					//console.log('crash test:', this.getTime());
 				}catch(e){
 					this.timerHandle.pause();
 					console.error('Silverlight crashed.')
@@ -177,23 +159,35 @@ define([
 
 		setupEvents: function(s){
 			// http://msdn.microsoft.com/en-us/library/system.windows.controls.mediaelement_events%28v=vs.95%29.aspx
-			log(' ------------ setupEvents')
+
+			if(this.connections) return;
+			this.connections = [];
+
+			log(' ------------ setupEvents');
 
 			this.timerHandle = timer(this, function(){
-				this.onTime(this.getTime(true));
+				this.onProgress(this.getMeta());
 			}, Infinity, this.timeInterval, {paused:1});
 
 
 
 			var ae = function(eventName, fn){
-				this.video.node.AddEventListener(eventName, lang.bind(this, fn));
+				var pauseable = lang.bind(this, fn);
+				var event = {
+					token:0,
+					paused:0,
+					fn: lang.bind(this, function(evt){
+						pauseable(evt);
+					})
+				}
+				this.video.node.AddEventListener(eventName, pauseable);
 				return lang.bind(this, "on"+eventName);
 			}.bind(this);
 
 			var csc = ae('CurrentStateChanged', function(){
 				var state = this.state = this.video.node.CurrentState;
 				log('state:', state)
-				if(state == "Playing"){ this.onPlay(); }
+				if(state == "Playing"){ this.hasPlayed = true; this.onPlay(); }
 				if(state == "Paused"){ this.onPause(); }
 				if(state == "Playing" || state == "Buffering" || state == "Opening") {
 					this.complete = false;
@@ -245,7 +239,7 @@ define([
 					this.height = this.wasHeight;
 					if(this.hasHtmlControls) this.hideControls();
 				}
-				this.resizeElements();
+				this.resize();
 				this.onFullscreen();
 			});
 
@@ -259,6 +253,9 @@ define([
 		},
 		onMediaEnded: function(){
 			console.info("MediaEnded");
+			this.complete = true;
+			this.onPause();
+			this.hasPlayed = false;
 			this.onComplete();
 		},
 		onBufferingProgressChanged: function(/* Float */f){
@@ -292,7 +289,7 @@ define([
 		},
 
 		onCurrentStateChanged: function(state){
-			console.info("CurrentState", state);
+			//console.info("CurrentState", state);
 			if(state == 'Opening'){
 				this.videoReady = false;
 			}else{
@@ -305,11 +302,11 @@ define([
 
 
 
-		setVideo: function(path, noPlay){
-			if(path) this.path = path;
+		setVideo: function(src, noPlay){
+			if(src) this.src = src;
 			if(!isReady(this, 'video')) return;
 			this.complete = false;
-			this.video.node.Source = this.path;
+			this.video.node.Source = this.src;
 			if(!noPlay && this.autoplay){
 				on.once(this, 'onMediaOpened', this, 'play');
 			}
@@ -318,6 +315,16 @@ define([
 		fullscreen: function(){
 			// only callable by silverlight controls
 			this.back.ctx.FullScreen = !this.isFullscreen;
+		},
+
+		goFullscreen: function(){
+			var box = dom.box(this.domNode);
+
+			this.isFullscreen = !this.isFullscreen;
+			this.width = box.w
+			this.height = box.h
+			this.canvas.size(box.w, box.h);
+			this.resize();
 		},
 
 		play: function(){
@@ -335,13 +342,15 @@ define([
 			}
 		},
 		hide: function(){
-			// can't actually hide a Flash video.
+			// can't actually hide a Flash video - not sure about SL.
 			// this is here to maintain a common signature.
 			this.pause();
 		},
+
 		show: function(){
 			this.play();
 		},
+
 		pause: function(){
 			log('play');
 			this.video.node.Pause();
@@ -390,18 +399,19 @@ define([
 
 		},
 
-		resizeElements: function(){
+		resize: function(){
 			this.back.size({width:this.width, height:this.height});
+			//this.back.position(100, 200);
 			this.centerVideo();
-			this.controls.onFullscreen(this.isFullscreen);
+			this.nativeControls.onFullscreen(this.isFullscreen, this.controls);
 		},
 
 		showControls: function(){
-			this.controls.show();
+			this.nativeControls.show();
 		},
 
 		hideControls: function(){
-			this.controls.hide();
+			this.nativeControls.hide();
 		},
 
 		centerVideo: function(){
@@ -425,7 +435,7 @@ define([
 				this.video.size({width:this.naturalVideoWidth,height:this.naturalVideoHeight});
 
 			}else if(this.isFullscreen || videoIsSmaller){
-				log('video is smaller (or fullscreen');
+				log('video is smaller (or fullscreen)');
 				if(ma == ca){
 					// same
 					w = cw;
@@ -453,7 +463,7 @@ define([
 				// tried making the video larger, using an even amount, 1.5, 2.0, etc.
 				// didn't work. 1.5 still crashed it. It was pretty large, though, 940 x 500 or something.
 				//
-				/*log('scale video up');
+				/*
 
 				var sizes = [1, 1.5, 2, 2.5, 3];
 				var size = sizes[0];
@@ -466,6 +476,8 @@ define([
 
 				w = mw*size;
 				h = mh*size;*/
+
+				log('scale video up');
 
 				w = this.naturalVideoWidth;
 				h = this.naturalVideoHeight;
@@ -498,35 +510,7 @@ define([
 			}
 		},
 
-		onLoad: function(/* Object */ player){
-			// summary:
-			// 		Fired when the player has loaded
-			// 		NOT when the video has loaded
-			//
-		},
-
-		onDownload: function(/* Float */percent){
-			// summary:
-			//		Fires the amount of that the media has been
-			//		downloaded. Number, 0-1
-			topic.pub("/video/on/download", {p:percent});
-		},
-
-		onClick: function(/* Object */ evt){
-			// summary:
-			// 		TODO: Return x/y of click
-			// 		Fires when the player is clicked
-			// 		Could be used to toggle play/pause, or
-			// 		do an external activity, like opening a new
-			//		window.
-			topic.pub("/video/on/click");
-		},
-
-		onPreMeta: function(){
-			topic.pub("/video/on/premeta", this.getMeta());
-		},
-
-		_onmeta: function(m){
+		_onmeta: function(/*Object*/m){
 			this.meta = m;
 			this._metaHandle && this._metaHandle.remove();
 			if(!this.premetaFired){
@@ -537,72 +521,6 @@ define([
 			this._metaHandle = timer(this, function(){
 				this.onMeta(m);
 			}, 30);
-		},
-
-		onMeta: function(){
-			topic.pub("/video/on/meta", this.getMeta());
-		},
-
-		onTime: function(/* Float */ time){
-			// summary:
-			//		The position of the playhead in seconds
-			topic.pub("/video/on/frame", this.getMeta());
-		},
-
-		onStart: function(/* Object */ data){
-			// summary:
-			// 		Fires when video starts
-			topic.pub("/video/on/start", this.getMeta());
-		},
-
-		onPlay: function(/* Object */ data){
-			// summary:
-			// 		Fires when video starts or resumes
-			this.hasPlayed = true;
-			topic.pub("/video/on/play", this.getMeta());
-		},
-
-		onPause: function(/* Object */ data){
-			// summary:
-			// 		Fires when video stops
-			topic.pub("/video/on/pause", this.getMeta());
-		},
-
-
-		onComplete: function(){
-			this.complete = true;
-			this.onPause();
-			this.hasPlayed = false;
-			topic.pub("/video/on/complete", this.getMeta());
-
-		},
-
-		onBuffer: function(/* Boolean */ isBuffering){
-			// summary:
-			//		Fires when buffering or when buffering
-			//		has finished
-		},
-
-		onError: function(/* Object */ errorObject){
-			// summary:
-			// 		Fired when the player encounters an error
-		},
-
-		onStatus: function(/* String */status){
-			// summary:
-			// 		The status of the video from the SWF
-			// 		playing, stopped, bufering, etc.
-		},
-
-		onFullscreen: function(/* Boolean */ isFullscreen){
-			// summary:
-			// 		Fired when video toggles fullscreen
-			topic.pub("/video/on/fullscreen", isFullscreen);
-		},
-
-		onResize: function(){
-			// summary:
-			// 		Fired when video resizes, but not when it goes fullscreen
 		}
 	});
 

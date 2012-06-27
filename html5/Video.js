@@ -17,13 +17,15 @@ define([
 	return declare('dx-media.html5.Video', [Mobile], {
 		baseClass:'dxHtml5Video',
 
-		controls:false,
+
 		autobuffer:true,
 		buffer:true,
 		preload:"auto",
 		autoplay:false,
 
 		initialVolume:.7,
+
+		renderer:'html5',
 
 		postMixInProperties: function(){
 
@@ -51,38 +53,36 @@ define([
 			if(has('ipad')) this._setVideo(p);
 
 			this.volume(this.initialVolume);
-			this.connectEvents();
+			this.setupEvents();
 			//timer(this, 'connectEvents', 1)
 			log('video ready.')
 		},
 
-		connectEvents: function(){
+		setupEvents: function(){
 			if(has('iphone')) return;
 
 			this.connection = on.multi(this.domNode, {
 				"play": "onPlay",
 				"pause": "onPause",
-				"progress": "onLoad",
+				"progress": "_load",
 				"error": "onError",
-				"timeupdate": "_onFrame",
-				"ended": "onComplete",
+				"timeupdate": "_onProgress",
+				"ended": function(){
+					this.complete = true;
+					this.onPause();
+					this.hasPlayed = false;
+					this.onComplete(this.getMeta())
+				},
 				"abort": "onAbort",
 				"empty": "onEmpty",
 				"emptied": "onEmptied",
 				"waiting": "onWaiting",
-				"seeked":"onSeeked",
-				"webkitfullscreenchange": "onFullscreen"
+				"seeked":"onSeeked"/*,
+				"webkitfullscreenchange": function(){
+					// hm... this doesn't belong here - it belongs in controls?
+					this.onFullscreen(document.webkitIsFullScreen);
+				}*/
 			}, this);
-
-			this.subscriptions = topic.sub.multi({
-				"/video/play":	"play",
-				"/video/pause":	"pause",
-				"/video/seek":	"seek",
-				"/video/volume":"volume",
-				"/video/fullscreen":"fullscreen",
-				"/video/restart":"restart"
-			}, this);
-
 			on(this.domNode, 'click', this, 'onClick');
 
 			// WebKit "feature" http://code.google.com/p/chromium/issues/detail?id=39419
@@ -150,36 +150,15 @@ define([
 				this.seek(0);
 			}else{
 				this.show();
-				this.onRestart();
+				this.complete = false;
+				// without the pause, Safari crashes:
+				timer(this, "onPlay", 1);
+				timer(this, function(){
+					this.domNode.currentTime = .1;
+					this.domNode.play();
+				}, 260);
+				this.onRestart(this.getMeta());
 			}
-		},
-
-		hide: function(){
-			this.pause();
-			b.hide(this.video);
-		},
-		show: function(){
-			b.show(this.video);
-		},
-
-
-		onComplete: function(){
-			log("-=VIDI FINI=-");
-			this.complete = true;
-			this.onPause();
-			this.hasPlayed = false;
-			topic.pub("/video/on/complete");
-
-		},
-
-		onRestart: function(){
-			this.complete = false;
-			// without the pause, Safari crashes:
-			timer(this, "onPlay", 1);
-			timer(this, function(){
-				this.domNode.currentTime = .1;
-				this.domNode.play();
-			}, 260);
 		},
 
 		getMeta: function(){
@@ -193,14 +172,6 @@ define([
 			}
 		},
 
-		onMeta: function(m){
-			topic.pub("/video/on/meta", this.meta);
-		},
-
-		onPreMeta: function(m){
-			topic.pub("/video/on/premeta", this.meta);
-		},
-
 		_onmeta: function(m){
 			// *** on iPad won't fire until PLAY **************************
 			this._metaHandle && this._metaHandle.remove();
@@ -210,7 +181,7 @@ define([
 				this.videoWidth = m.videoWidth;
 				this.videoHeight = m.videoHeight;
 				this.videoAspect = this.videoHeight/this.videoWidth;
-				this.onResize();
+				this.resize();
 			}
 
 			if(!this.premetaFired){
@@ -223,40 +194,34 @@ define([
 			}, 30);
 		},
 
+		_onProgress: function(){
+			var m = this.getMeta();
+			if(m.duration) this.onProgress(m);
+		},
+
 		onError: function(evt){
 			// code 4 == no source. what else?
 			console.error("Video Error:", evt.target.error.code, evt.target.src); //evt.target.error.code,
-			topic.pub("/video/error", {
-				src:evt.target.src
-			});
+			this.inherited(arguments);
 		},
 
-
-		_onFrame: function(){
-			var m = this.getMeta();
-			if(m.duration) this.onFrame(m);
-		},
-
-		onFrame: function(meta){
-			topic.pub("/video/on/frame", meta);
-		},
-
-		onLoad: function(evt){
+		_load: function(evt){
 			var p, v = this.domNode;
 
 			if(evt.total){
 				p = (evt.loaded / evt.total);
 			}else{
 				if(!v.readyState){ // Firefox sometimes needs to wait
-					timer(this, "onLoad", 100);
+					timer(this, "_load", 100);
 					return;
 				}
 				p = ((v.buffered.end(0) / v.duration));
 			}
-			topic.pub("/video/on/download", {p:p});
+			// TODO: meta?
+			this.onDownload({p:p});
 		},
 
-		onResize: function(){
+		resize: function(){
 			var o = dom.box(this.domNode);
 			var v = this.domNode;
 
@@ -281,10 +246,18 @@ define([
 			}
 		},
 
+		//fullscreen: function(){
+		//	console.trace()
+		//	// TODO: fullscreen for firefox
+		//	this.domNode.webkitEnterFullScreen();
+		//},
+
+		goFullscreen: function(){
+			log('GO FULL!')
+		},
+
 		onFullscreen: function(evt){
 			// TODO: fullscreen for firefox
-			log("FULLSCREEN is fs:", document.webkitIsFullScreen, evt);
-			topic.pub("/video/on/fullscreen", {isFullscreen:document.webkitIsFullScreen});
 			this.isFullscreen = document.webkitIsFullScreen;
 		},
 		onClick: function(){
@@ -301,11 +274,7 @@ define([
 				this.onRestart();
 			}
 		},
-		fullscreen: function(){
-			// TODO: fullscreen for firefox
-			var v = this.domNode;
-			v.webkitEnterFullScreen();
-		},
+
 
 		onStart: function(){
 			topic.pub("/video/on/start", this.meta);

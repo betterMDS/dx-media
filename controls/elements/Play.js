@@ -7,7 +7,7 @@ define([
 	"dx-timer/timer"
 ], function(declare, _Button, dom, lang, logger){
 
-	var log = logger('PLY', 1);
+	var log = logger('PLY', 0);
 
 	return declare('dx-media.controls.elements.Play', [_Button], {
 

@@ -70,8 +70,8 @@ define([
 			var name = lang.uid('SL');
 			var embedId = lang.uid('SL');
 			var sourceId = scriptId;
-			var width = this.width + 'px';
-			var height = this.height + 'px';
+			var width = '100%';//this.width + 'px';
+			var height = '100%';//this.height + 'px';
 
 			var str =	/*'<div style="left:-200px;position:absolute;">' +*/
 						'<script type="text/xaml" id="'+scriptId+'">' +
@@ -107,6 +107,13 @@ define([
 
 		add: function(xamlShape){
 			this.container.children.add(xamlShape);
+		},
+
+		size: function(w,h){
+			this.node.width = w;
+			this.node.height = h;
+			console.log('CANVAS:::::', this.node.width, this.node.height);
+			return this;
 		},
 
 		onLoad: function(sender){
@@ -213,6 +220,7 @@ define([
 		size: function(obj){
 			if(!this.supports('size')) return this;
 			if(obj) this.mix(obj);
+			//log('size:', this.type, this.width, this.height);
 			this.node.width = this.width;
 			this.node.height = this.height;
 			return this;
@@ -224,7 +232,7 @@ define([
 			}else if(obj){
 				this.mix(obj);
 			}
-			//log('pos:', this.x, this.y)
+			//log('pos:', this.type, this.x, this.y)
 			this.container['Canvas.Top'] = this.y;
 			this.container['Canvas.Left'] = this.x;
 			return this;

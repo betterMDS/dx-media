@@ -1,13 +1,14 @@
 define([
 	"dojo/_base/declare",
 	"./_Button",
+	"dx-alias/has",
 	"dx-alias/dom",
 	"dx-alias/lang",
 	"dx-alias/log",
 	"dx-timer/timer"
-], function(declare, _Button, dom, lang, logger){
+], function(declare, _Button, has, dom, lang, logger){
 
-	var log = logger('PLY', 1);
+	//var log = logger('PLY', 1);
 
 	return declare('dx-media.controls.elements.Fullscreen', [_Button], {
 
@@ -15,12 +16,8 @@ define([
 		buttonClass:'dxFullscreenBtn',
 		iconClass:'dxFullscreenIcon',
 
-		postCreate: function(){
-			this.inherited(arguments);
-		},
-
 		onClick: function(){
-			console.log('click');
+
 		}
 	});
 });
