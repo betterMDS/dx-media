@@ -5,10 +5,15 @@ define([
 	'dx-alias/lang',
 	'dx-alias/log'
 ],function(declare, Widget, on, lang, logger){
-
+	//	summary:
+	//		The controller that wires a set of controls (controls/Controlbar)
+	//		to a video renderer.
+	//	TODO:
+	//		Handle multiple video renderers (playlist).
+	//
 	var log = logger('VC', 1);
 
-	return declare('dx-media.controls.VideoControl', [Widget], {
+	return declare('dx-media.controls.Controller', [Widget], {
 
 		controls:null,
 		video:null,
@@ -99,6 +104,7 @@ define([
 				}
 
 				if(!!this.fullscreen){
+					this.video.removeFullscreen();
 					this.on(this.map.Fullscreen, 'onClick', this, function(){
 						log('------------------------------- Fullscreen', this.video.renderer);
 						this.fullscreen();
