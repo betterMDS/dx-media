@@ -32,9 +32,7 @@
 				"dojo",
 				"dojo/parser",
 				"dojo/domReady!",
-				"dijit/registry",
-				"dx-alias/on",
-				"dx-media/controls/VideoControl",
+				"dx-media/controls/Controller",
 
 				"dx-alias/shim",
 				"dx-media/Silverlight/Video",
@@ -42,7 +40,7 @@
 				"dx-media/controls/Controlbar",
 				"dx-media/controls/elements/all"
 
-			], function(dojo, parser, ready, registry, on, VideoControl){
+			], function(dojo, parser, ready, Controller){
 
 			parser.parse().then(function(){
 				console.log('parsed')
@@ -50,24 +48,13 @@
 				console.error('parse error', e)
 			});
 
-			var vid = registry.byId('video');
-
-			new VideoControl({
+			new Controller({
 				video:'video',
 				controls:'controls',
 				preview:'preview',
 				screenButton:'screenButton'
 			});
 
-			on(vid, 'onPlay', function(){
-				console.log('play!');
-			});
-			on(vid, 'onPause', function(){
-				console.log('pause!');
-			});
-			on(vid, 'onComplete', function(){
-				console.log('complete!');
-			});
 		});
 	</script>
 </head>

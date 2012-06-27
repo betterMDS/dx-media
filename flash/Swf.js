@@ -62,7 +62,7 @@ define([
 		init: function(options){
 			options = options || {};
 
-			options.isDebug = false;
+			options.isDebug = options.isDebug || false;
 
 			if(options.loader){
 				this.movie = dojo.moduleUrl('dx-media', 'resources/loader.swf');

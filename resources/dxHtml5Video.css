@@ -1,13 +1,10 @@
-.dxHtml5Video{
-
+.dxHtml5Video, .dxFlashVideo, dxSilverlightVideo{
+	width: 100%;
+	height: 100%;
 }
 .dxPlayerPreview{
 	position:absolute;
 	display:block;
 	top:0;
 	left:0;
-}
-.dxFlashVideo{
-	width: 100%;
-	height: 100%;
 }

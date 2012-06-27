@@ -15,7 +15,8 @@ define([
 ],function(declare, has, Mobile, dom, string, lang, on, topic, logger, timer, sl, theme, Controls){
 	//
 	//	summary:
-	//		An Silverlight Video player.
+	//		An Silverlight Video player, which inherits methods and events from
+	//		mobile/Video. See that Class for API summaries.
 	//		Can be used standalone, or as a component of a more versatile media
 	//		player, for browsers that can't play HTML5 video or specific video
 	//		codecs (like MP4 in Firefox).
@@ -79,10 +80,7 @@ define([
 			log('stylesheet loaded, ready to build...');
 			if(this.inited) return;
 			this.inited = 1;
-			dom.style(this.domNode, {
-				height:'100%',
-				width:'100%'
-			});
+
 			if(!this.width){
 				var box = dom.box(this.domNode);
 				this.width = box.w;

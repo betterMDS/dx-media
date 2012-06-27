@@ -33,14 +33,14 @@
 				"dojo/domReady!",
 				"dijit/registry",
 				"dx-alias/on",
-				"dx-media/controls/VideoControl",
+				"dx-media/controls/Controller",
 
 				"dx-alias/shim",
 				"dx-media/Html5/Video",
 				"dx-media/Html5/Preview",
 				"dx-media/controls/Controlbar",
 				"dx-media/controls/elements/all"
-			], function(dojo, parser, ready, registry, on, VideoControl){
+			], function(dojo, parser, ready, registry, on, Controller){
 
 			parser.parse().then(function(){
 				console.log('parsed');
@@ -50,7 +50,7 @@
 
 			var vid = registry.byId('video');
 
-			new VideoControl({
+			new Controller({
 				video:'video',
 				controls:'controls',
 				preview:'preview',

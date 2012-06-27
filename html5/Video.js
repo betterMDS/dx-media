@@ -10,7 +10,12 @@ define([
 	'dx-timer/timer'
 
 ], function(declare, Mobile, dom, on, lang, has, topic, logger, timer){
-
+	//
+	//	summary:
+	//		An HTML5 Video player for use in browsers on desktops. Inherits
+	//		methods and events from mobile/Video. See that Class for API
+	//		summaries.
+	//
 	var log = logger('H5V', 1);
 
 
@@ -61,6 +66,8 @@ define([
 		setupEvents: function(){
 			if(has('iphone')) return;
 
+			var meta, ready;
+
 			this.connection = on.multi(this.domNode, {
 				"play": "onPlay",
 				"pause": "onPause",
@@ -77,12 +84,15 @@ define([
 				"empty": "onEmpty",
 				"emptied": "onEmptied",
 				"waiting": "onWaiting",
-				"seeked":"onSeeked"/*,
-				"webkitfullscreenchange": function(){
-					// hm... this doesn't belong here - it belongs in controls?
-					this.onFullscreen(document.webkitIsFullScreen);
-				}*/
+				"seeked":"onSeeked",
+				 "loadedmetadata": function(evt){
+					log("   ---------- > meta pre event:", evt)
+					meta = evt.target;
+					meta.isAd = this.isAd;
+					if(ready) this._onmeta(meta);
+				}
 			}, this);
+
 			on(this.domNode, 'click', this, 'onClick');
 
 			// WebKit "feature" http://code.google.com/p/chromium/issues/detail?id=39419
@@ -93,14 +103,6 @@ define([
 					on(s.node, "error", this, "onError");
 				}, this);
 			}
-
-			var meta, ready, v = this.video;
-			on(this.domNode, "loadedmetadata", this, function(evt){
-				log("   ---------- > meta pre event:", evt)
-				meta = evt.target;
-				meta.isAd = this.isAd;
-				if(ready) this._onmeta(meta);
-			});
 
 			tmr = timer(this, function(){
 				if (this.domNode.readyState > 0) {
@@ -246,20 +248,22 @@ define([
 			}
 		},
 
-		//fullscreen: function(){
-		//	console.trace()
-		//	// TODO: fullscreen for firefox
-		//	this.domNode.webkitEnterFullScreen();
-		//},
+		goFullscreen: function(isFullscreen){
+			this.isFullscreen = isFullscreen;
+			var s = isFullscreen ?
+			{
+				width:'100%',
+				height:'100%'
+			} :
+			{
+				width:this.width + 'px',
+				height:this.height + 'px'
+			};
+			dom.style(this.domNode, s);
 
-		goFullscreen: function(){
 			log('GO FULL!')
 		},
 
-		onFullscreen: function(evt){
-			// TODO: fullscreen for firefox
-			this.isFullscreen = document.webkitIsFullScreen;
-		},
 		onClick: function(){
 			log(' --------------------- CLICK');
 			this.domNode.isAd = this.isAd;

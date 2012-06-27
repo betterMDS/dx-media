@@ -17,7 +17,7 @@
 			height:360px;
 			position:relative;
 		}
-		
+
 
 	</style>
     <script>
@@ -34,29 +34,28 @@
 				"dojo/domReady!",
 				"dijit/registry",
 				"dx-alias/on",
-				"dx-media/controls/VideoControl",
+				"dx-media/controls/Controller",
 
 				"dx-alias/shim",
 				"dx-media/Html5/Video",
 				"dx-media/Html5/Preview",
 				"dx-media/controls/Controlbar",
 				"dx-media/controls/elements/all"
-			], function(dojo, parser, ready, registry, on, VideoControl){
+			], function(dojo, parser, ready, registry, on, Controller){
 
 			parser.parse().then(function(){
 
 				setTimeout(function(){
-				var vid = registry.byId('video');
+					var vid = registry.byId('video');
 
-				console.log('vid', vid);
+					console.log('vid', vid);
 
-				new VideoControl({
-					video:'video',
-					controls:'controls',
-					preview:'preview',
-					screenButton:'screenButton'
-				});
-
+					new Controller({
+						video:'video',
+						controls:'controls',
+						preview:'preview',
+						screenButton:'screenButton'
+					});
 				}, 1);
 
 			}, function(e){

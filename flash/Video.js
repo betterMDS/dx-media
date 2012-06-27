@@ -6,38 +6,58 @@ define([
 	'dx-alias/log',
 	'dx-timer/timer'
 ], function(declare, Mobile, Swf, lang, logger, timer){
-
+	//
+	//	summary:
+	//		A Flash video renderer which inherits methods and events from
+	//		mobile/Video. See that Class for API summaries.
+	//		Can be used standalone, or as a component of a more versatile media
+	//		player, for browsers that can't play HTML5 video or specific video
+	//		codecs, like MP4 in Firefox, or anything in old IE.
+	//		
 	var log = logger('FLV', 1);
 
-	var flashVideoCount = 0;
-	var fVideos = {};
+	var
+		flashVideoCount = 0,
+		fVideos = {},
 
-	// A SWF needs a global object to talk to.
-	window.dxMediaFlashVideo = {
-		current:'',
-		register: function(vid){
+		register = function(vid){
 			fVideos[vid.videoRef] = vid;
 		},
-		pub: function(method, ref, args){
+
+		pub = function(method, ref, args){
 			timer(function(){
 				fVideos[ref]['_'+method](args);
 			}, 1)
+		}
 
-		},
+
+	window.dxMediaFlashVideo = {
+		//	summary:
+		// 		A SWF needs a global object to talk to, and that is this object.
+		// 		It collects the methods and passes them to the flash/Video
+		// 		instance based on the ref ID.
+		// 		Note that while this object may be accessible, it only is for
+		// 		the SWF, with the exception of version().
+		//
 		version: function(){
+			//	summary:
+			//		The only public method in this object. Returns the version
+			//		of the installed Flash plugin.
 			return getVersion();
 		},
+
 		onMeta: function(meta, ref){
-			this.pub('onMeta', ref, meta);
+			// [private]
+			pub('onMeta', ref, meta);
 		},
 		onClick: function(ref){
-			this.pub('onClick', ref);
+			// [private]
+			pub('onClick', ref);
 		},
 		onStatus: function(obj, ref){
+			// [private]
 			//console.log("flash.video_status:", obj.channel, ref);
-			if(obj.channel){
-				this.pub('onStatus', ref, obj);
-			}
+			if(obj.channel) pub('onStatus', ref, obj);
 		}
 	};
 
@@ -62,12 +82,13 @@ define([
 				loader: true,
 				videoRef: this.videoRef = 'flashVideo' + (flashVideoCount++),
 				autoplay: options.autoplay || this.autoplay,
-				standalone:this.controls
+				standalone:this.controls,
+				isDebug:true
 			}
 
 			this.queue = [];
 
-			dxMediaFlashVideo.register(this);
+			register(this);
 
 			this.init(flashVars);
 		},
@@ -192,6 +213,22 @@ define([
 		show: function(){
 			this.play();
 		},
+
+		showFullscreen: function(){
+			if(this.fsRemoved) return;
+			this.tell('showFullscreen');
+		},
+
+		hideFullscreen: function(){
+			if(this.fsRemoved) return;
+			this.tell('hideFullscreen');
+		},
+
+		removeFullscreen: function(){
+			this.tell('hideFullscreen');
+			this.fsRemoved = true;
+		},
+
 		play: function(){
 			log('play');
 			this.tell("doPlay");
