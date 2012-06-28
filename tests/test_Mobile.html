@@ -40,44 +40,20 @@
     <script src="../../dojo/dojo.js"></script>
 	<script>
 		require([
-				"dojo",
 				"dojo/parser",
-				"dojo/domReady!",
-				"dx-media/video/Mobile",
-				"dx-alias/on",
-				"dijit/registry"
-			], function(dojo, parser, ready, vtour, on, registry){
-
-				console.log('dojo', dojo);
+				"dojo/domReady!"
+			], function(parser, ready){
 				parser.parse();
-
-				var vt = registry.byId('vtour');
-
-				on('vt1', 'click', function(){
-					//vt.load('images/VT_01.jpg');
-				});
-				on('vt2', 'click', function(){
-					//vt.load('images/VT_02.jpg');
-				});
-				on('vt3', 'click', function(){
-					//vt.load('images/VT_03.jpg');
-				});
-
 			});
 	</script>
 </head>
 <body>
 
     <div id="player">
-		<video id='vid' data-dojo-type="dx.media.video.Mobile" poster="media/images/SightAndSound.jpg">
+		<video id='vid' data-dojo-type="dx-media/mobile/Video" poster="media/images/SightAndSound.jpg">
 			<source src="media/video/SightAndSound_sm.mp4"></source>
 		</video>
 	</div>
 
-	<button id='vt1'>VT 01</button>
-	<button id='vt2'>VT 02</button>
-	<button id='vt3'>VT 03</button>
-
-	<textarea id="dbg" rows=6 ></textarea>
 </body>
 </html>
