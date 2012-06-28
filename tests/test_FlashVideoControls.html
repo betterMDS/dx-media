@@ -32,8 +32,6 @@
 				"dojo",
 				"dojo/parser",
 				"dojo/domReady!",
-				"dijit/registry",
-				"dx-alias/on",
 				"dx-media/controls/Controller",
 
 				"dx-alias/shim",
@@ -41,22 +39,19 @@
 				"dx-media/Html5/Preview",
 				"dx-media/controls/Controlbar",
 				"dx-media/controls/elements/all"
-			], function(dojo, parser, ready, registry, on, Controller){
+			], function(dojo, parser, ready, Controller){
 
 			parser.parse().then(function(){
 
-				setTimeout(function(){
-					var vid = registry.byId('video');
+				// Flash Video slows down the parser, so you have to
+				// put the code inside the parse().then()
 
-					console.log('vid', vid);
-
-					new Controller({
-						video:'video',
-						controls:'controls',
-						preview:'preview',
-						screenButton:'screenButton'
-					});
-				}, 1);
+				new Controller({
+					video:'video',
+					controls:'controls',
+					preview:'preview',
+					screenButton:'screenButton'
+				});
 
 			}, function(e){
 				console.error('parse error', e)
