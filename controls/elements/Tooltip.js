@@ -1,19 +1,18 @@
 define([
 	"dojo/_base/declare",
-	"../../util/has",
-	"dijit/_WidgetBase",
-	"dijit/_TemplatedMixin",
+	"dx-alias/Widget",
+	"dx-alias/has",
 	"dx-alias/dom",
 	"dx-alias/lang",
 	"dx-alias/log",
 	"dx-timer/timer"
-], function(declare, has, _WidgetBase, _TemplatedMixin, dom, lang, logger){
+], function(declare, Widget, has, dom, lang, logger){
 
 	var log = logger('TIP', 0);
 
 	var isIE = has('ie') < 9;
 
-	return declare('dx-media.controls.elements.Tooltip', [_WidgetBase, _TemplatedMixin], {
+	return declare('dx-media.controls.elements.Tooltip', [Widget], {
 
 		templateString:  '<div class="dxTooltip"></div>',
 
