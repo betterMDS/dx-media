@@ -1,12 +1,12 @@
 define([
-	'dojo',
-	'../util/has',
 	'dojo/_base/declare',
+	'dx-alias/has',
+
 	'dx-alias/lang',
 	'dx-alias/on',
 	'dx-alias/log',
 	'dx-timer/timer'
-], function(dojo, has, declare, lang, on, logger, timer){
+], function(declare, has, lang, on, logger, timer){
 
 	var log = logger('SL', 0);
 
