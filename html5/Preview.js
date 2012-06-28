@@ -1,14 +1,12 @@
 define([
 	"dojo/_base/declare",
-	"dojo/_base/connect",
-	"../mobile/common",
 	"./Image",
 	"dx-alias/dom",
 	"dx-alias/lang",
 	"dx-alias/on",
 	"dx-alias/log",
 	"dx-timer/timer"
-], function(declare, connect, mobile, Img, dom, lang, on, logger, timer){
+], function(declare, Img, dom, lang, on, logger, timer){
 
 	var log = logger('PRE', 0);
 
@@ -31,11 +29,11 @@ define([
 			this.imageAspect = this.nativeWidth / this.nativeHeight;
 			//console.log('parent:', this.domNode.parentNode);
 			if(this.domNode.parentNode){
-				this.onSize(dom.box(this.domNode.parentNode));
+				this.resize(dom.box(this.domNode.parentNode));
 			}
 		},
 
-		onSize: function(size){
+		resize: function(size){
 			if(!this.imageAspect){
 				timer(this, function(){
 					this.onSize(size);

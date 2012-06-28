@@ -1,15 +1,18 @@
 define([
 	'dojo/_base/declare',
 	'dx-alias/Widget',
+	'dx-alias/dom',
 	'dx-alias/on',
 	'dx-alias/lang',
 	'dx-alias/log'
-],function(declare, Widget, on, lang, logger){
+],function(declare, Widget, dom, on, lang, logger){
 	//	summary:
 	//		The controller that wires a set of controls (controls/Controlbar)
 	//		to a video renderer.
 	//	TODO:
 	//		Handle multiple video renderers (playlist).
+	//		Handle Slideshow and Vtour
+	//
 	//
 	var log = logger('VC', 1);
 
@@ -19,18 +22,23 @@ define([
 		video:null,
 		preview:null,
 		screenButton:null,
+
 		isFullscreen:false,
 
 		postCreate: function(){
 
+			this.displayElements = [];
+
 			['controls', 'video', 'preview', 'screenButton'].forEach(function(str){
 				this[str] = this.getObject(str);
+				this.displayElements.push(this[str]);
 			}, this);
 
 			this.id = lang.uid('VideoControl');
 
 			this._connections = [];
 
+			log(this.controls);
 			log(this);
 
 			this.buttons = this.controls.getElements();
@@ -40,8 +48,14 @@ define([
 		},
 
 		init: function(){
+			if(!this.video || !this.controls){
+				console.error('Controller must be associated with a Video and a Controlbar.');
+				return;
+			}
 			if(this.inited) return;
 			this.inited = 1;
+
+			this.parentNode = this.controls.domNode.parentNode;
 
 			//log('map', this.map);
 
@@ -71,8 +85,9 @@ define([
 			}
 
 			if(this.map.Fullscreen){
+				// http://hacks.mozilla.org/2012/01/using-the-fullscreen-api-in-web-browsers/
+				var node = this.parentNode;
 
-				var node = this.controls.domNode.parentNode;
 				if(node.requestFullScreen){
 					on(document, 'fullscreenchange', this, 'onFullscreen');
 					this.fullscreen = function(){
@@ -108,7 +123,7 @@ define([
 					this.on(this.map.Fullscreen, 'onClick', this, function(){
 						log('------------------------------- Fullscreen', this.video.renderer);
 						this.fullscreen();
-						this.isFullscreen = !this.isFullscreen;
+
 					});
 				}else{
 					this.map.Fullscreen.destroy();
@@ -128,10 +143,27 @@ define([
 		},
 
 		onFullscreen: function(evt){
+			// http://hacks.mozilla.org/2012/01/using-the-fullscreen-api-in-web-browsers/
+
+			this.isFullscreen = !this.isFullscreen;
 			log('onFullscreen', evt);
-			this.video.goFullscreen(this.isFullscreen);
+			var box = dom.box(this.parentNode);
+			box.isFullscreen = this.isFullscreen;
+
+			this.displayElements.forEach(function(el){
+				el.resize && el.resize(box);
+			}, this);
+		},
+
+		getScreenSize: function(){
+			// summary:
+			//		Returns the dimensions of the browser window.
+			return {
+				h: window.innerHeight || document.documentElement.clientHeight,
+				w: window.innerWidth || document.documentElement.clientWidth
+			};
 		}
-		// http://hacks.mozilla.org/2012/01/using-the-fullscreen-api-in-web-browsers/
+
 
 	});
 });

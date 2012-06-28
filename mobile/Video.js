@@ -152,89 +152,6 @@ define([
 			});
 		},
 
-		/***********************************************************************
-		 *
-		 *								Methods
-		 *			(most of which should be overridden by extending class)
-		 *
-		 **********************************************************************/
-
-		play: function(){
-			// should be overridden by extending class
-			throw new Error('play() not implemented.');
-		},
-
-		pause: function(){
-			// should be overridden by extending class
-			throw new Error('pause() not implemented.');
-		},
-
-		seek: function(){
-			// should be overridden by extending class
-			throw new Error('seek() not implemented.');
-		},
-
-		volume: function(){
-			// should be overridden by extending class
-			throw new Error('volume() not implemented.');
-		},
-
-		show: function(){
-			if(this.showing) return;
-			this.showing = 1;
-			dom.show(this.domNode);
-		},
-
-		hide: function(){
-			if(!this.showing) return;
-			this.pause();
-			this.showing = 0;
-			dom.hide(this.domNode);
-		},
-
-		isPlaying: function(){
-			//	summary:
-			//		A getter for determining if video is playing.
-			// 		Should be overridden by extending class.
-			return false;
-		},
-
-		goFullscreen: function(/*Boolean*/ isFullscreen){
-			//	summary:
-			//		A notification that fullscreen mode has changed.
-		},
-
-		showFullscreen: function(){
-			//	summary:
-			//		Used for Flash and Silverlight - shows the fullscreen button
-			//		in the upper right corner.
-		},
-
-		hideFullscreen: function(){
-			//	summary:
-			//		Used for Flash and Silverlight - hides the fullscreen button
-			//		in the upper right corner.
-		},
-		removeFullscreen: function(){
-			//	summary:
-			//		Used for Flash and Silverlight - hides the fullscreen button
-			//		in the upper right corner, and keeps it hidden (destroyed
-			//		visually but not literally.
-		},
-
-		getMeta: function(){
-			//	summary:
-			//		Returns video metadata.
-			// 		Should be overridden by extending class.
-			return {};
-		},
-
-		/***********************************************************************
-		 *
-		 *							Base class methods
-		 *
-		 **********************************************************************/
-
 		deriveType: function(/*String*/filename){
 			//	summary:
 			//		Derives a mimetype string from the extension of a video file.
@@ -280,6 +197,98 @@ define([
 			//
 			renderer = renderer || this.renderer;
 			return supports(type, this.renderer);
+		},
+
+		/***********************************************************************
+		 *
+		 *								Methods
+		 *			(most of which should be overridden by extending class)
+		 *
+		 **********************************************************************/
+
+		show: function(){
+			//	summary:
+			//		Shows the video component.
+			//
+			if(this.showing) return;
+			this.showing = 1;
+			dom.show(this.domNode);
+		},
+
+		hide: function(){
+			//	summary:
+			//		Shows the video component. Does not apply in all cases -
+			//		namely flash/Video which cannot be hidden without reseting.
+			//
+			if(!this.showing) return;
+			this.pause();
+			this.showing = 0;
+			dom.hide(this.domNode);
+		},
+
+
+		play: function(){
+			// should be overridden by extending class
+		},
+
+		pause: function(){
+			// should be overridden by extending class
+		},
+
+		restart: function(){
+			//	summary:
+			//		Plays the video from the beginning.
+		},
+
+		seek: function(/*String|Float*/value){
+			//	summary:
+			//		Seeks to a specific point in the video. 'value' should be
+			//		a float between 0 - 1.
+			//		Also used are strings 'start' and 'end' to signify mousedown
+			//		and mouseup as the user interacts with the scrub handle.
+			//
+			// should be overridden by extending class
+		},
+
+		volume: function(/*Float*/value){
+			// should be overridden by extending class
+		},
+
+		isPlaying: function(){
+			//	summary:
+			//		A getter for determining if video is playing.
+			// 		Should be overridden by extending class.
+			return false;
+		},
+
+		goFullscreen: function(/*Boolean*/ isFullscreen){
+			//	summary:
+			//		A notification that fullscreen mode has changed.
+		},
+
+		showFullscreen: function(){
+			//	summary:
+			//		Used for Flash and Silverlight - shows the fullscreen button
+			//		in the upper right corner.
+		},
+
+		hideFullscreen: function(){
+			//	summary:
+			//		Used for Flash and Silverlight - hides the fullscreen button
+			//		in the upper right corner.
+		},
+		removeFullscreen: function(){
+			//	summary:
+			//		Used for Flash and Silverlight - hides the fullscreen button
+			//		in the upper right corner, and keeps it hidden (destroyed
+			//		visually but not literally).
+		},
+
+		getMeta: function(){
+			//	summary:
+			//		Returns video metadata.
+			// 		Should be overridden by extending class.
+			return {};
 		},
 
 		/***********************************************************************
@@ -340,14 +349,14 @@ define([
 			//		received. Some renderers will have different information
 			//		than others - like Flash, which has audio codec info.
 			//		The following properties are garaunteed:
-			// 			p: Number
+			// 			p: Float
 			//				The percentage of the video ellapsed
 			//			time: Number,
 			//				The time, in seconds of the position of the video
 			//			duration: Number
 			//				The length, in seconds of the video
 			//			remaining:Number
-			//				The time, in seconds, until teh end of the video
+			//				The time, in seconds, until the end of the video
 			//			isAd:Boolean
 			//				Experimental. Tells if this is an ad playing during
 			//				the main video.
@@ -388,16 +397,10 @@ define([
 			// 		progress handle.
 		},
 
-		onSize: function(size){
-			// summary:
-			// 		Fires on video resize.
-		},
-
 		onStop: function(/* Object */ meta){
 			// summary:
 			// 		Fired on pause OR end. (I think I use this for mobile only)
 		},
-
 
 		onComplete: function(/* Object */ meta){
 			// summary:
@@ -407,7 +410,8 @@ define([
 		onBuffer: function(/* Boolean */ isBuffering){
 			// summary:
 			//		Fires when buffering or when buffering
-			//		has finished
+			//		has finished. (not a garaunteed event to fire in all
+			//		renderers)
 		},
 
 		onError: function(/* Object */ errorObject){
@@ -424,6 +428,11 @@ define([
 		onFullscreen: function(/* Boolean */ isFullscreen){
 			// summary:
 			// 		Fired when video toggles fullscreen
+		},
+
+		onSize: function(size){
+			// summary:
+			// 		Fires on video resize.
 		},
 
 		onResize: function(){

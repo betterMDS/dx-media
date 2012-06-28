@@ -51,7 +51,7 @@ define([
 		//path:'',
 
 		timeInterval:100,
-		autoplay:true,
+		autoplay:false,
 		complete:false,
 		isFullscreen:false,
 		hasPlayed:false,
@@ -75,6 +75,12 @@ define([
 			this.hasHtmlControls = false; // TODO: really check for this
 			this.init();
 		},
+
+		/************************************************************************
+		 *																		*
+		 *								Class Specific							*
+		 *																		*
+		 ************************************************************************/
 
 		init: function(){
 			log('stylesheet loaded, ready to build...');
@@ -104,8 +110,10 @@ define([
 			this.buildVideo();
 
 
-			this.nativeControls = new Controls({width:this.width, height:this.height, video:this}, this.back);
-			if(!this.controls) this.hideControls();
+			if(!this.fsRemoved){
+				this.nativeControls = new Controls({width:this.width, height:this.height, video:this}, this.back);
+				if(!this.controls) this.hideControls();
+			}
 
 			this.setupEvents();
 
@@ -296,8 +304,90 @@ define([
 			this.onStatus(state.toLowerCase());
 		},
 
+		centerVideo: function(){
+
+			var mw = this.naturalVideoWidth;
+			var mh = this.naturalVideoHeight;
+			var cw = this.isFullscreen ? window.screen.width  : this.width;
+			var ch = this.isFullscreen ? window.screen.height : this.height;
+			var ma = mh/mw;
+			var ca = ch/cw;
+			var x, y, w, h;
+
+			var videoIsSmaller = mw>cw || mh>ch;
+
+			if(this.useNaturalSize && !this.isFullscreen){
+				log('actual size');
+				x = (cw-mw)/2;
+				y = (ch-mh)/2;
+				w = this.naturalVideoWidth;
+				h = this.naturalVideoHeight;
+				this.video.size({width:this.naturalVideoWidth,height:this.naturalVideoHeight});
+
+			}else if(this.isFullscreen || videoIsSmaller){
+				log('video is smaller (or fullscreen)');
+				if(ma == ca){
+					// same
+					w = cw;
+					h = ch;
+					x = 0;
+					y = 0;
+				}else if(ca > ma){
+					// cn is taller
+					w = cw;
+					x = 0;
+					h = mh * cw/mw;
+					y = (ch - h)/2;
+
+				}else{
+					// cn is wider
+					h = ch;
+					y = 0;
+					w = mw * ch/mh
+					x = (cw - w)/2;
+				}
 
 
+
+			}else{
+				// tried making the video larger, using an even amount, 1.5, 2.0, etc.
+				// didn't work. 1.5 still crashed it. It was pretty large, though, 940 x 500 or something.
+				//
+				/*
+
+				var sizes = [1, 1.5, 2, 2.5, 3];
+				var size = sizes[0];
+				for(var i=0; i< sizes.length;i++){
+					var s = sizes[i];
+					log('size:', s, mw*s, mh*s);
+					if(mw*s > cw || mh*s > ch) break;
+					size = sizes[i];
+				}
+
+				w = mw*size;
+				h = mh*size;*/
+
+				log('scale video up'); // not really.
+
+				w = this.naturalVideoWidth;
+				h = this.naturalVideoHeight;
+				x = (cw-w)/2;
+				y = (ch-h)/2;
+
+
+			}
+			log("center:", x, y, w, h, 'container:', cw, ch, 'media:', mw, mh, 'fullscreen', this.isFullscreen);
+			this.video.size({width:w,height:h});
+			this.video.position({x:x,y:y});
+			///
+		},
+
+
+		/************************************************************************
+		 *																		*
+		 *						Common Method Signatures						*
+		 *																		*
+		 ************************************************************************/
 
 
 		setVideo: function(src, noPlay){
@@ -308,21 +398,6 @@ define([
 			if(!noPlay && this.autoplay){
 				on.once(this, 'onMediaOpened', this, 'play');
 			}
-		},
-
-		fullscreen: function(){
-			// only callable by silverlight controls
-			this.back.ctx.FullScreen = !this.isFullscreen;
-		},
-
-		goFullscreen: function(){
-			var box = dom.box(this.domNode);
-
-			this.isFullscreen = !this.isFullscreen;
-			this.width = box.w
-			this.height = box.h
-			this.canvas.size(box.w, box.h);
-			this.resize();
 		},
 
 		play: function(){
@@ -397,98 +472,51 @@ define([
 
 		},
 
-		resize: function(){
+		fullscreen: function(){
+			// only callable by silverlight controls
+			this.back.ctx.FullScreen = !this.isFullscreen;
+		},
+
+		goFullscreen: function(size){
+			//var box = dom.box(this.domNode);
+
+			this.isFullscreen = !this.isFullscreen;
+			this.width = size.w
+			this.height = size.h
+			this.canvas.size(box.w, box.h);
+			this.resize();
+		},
+
+		resize: function(size){
+			log('resize');
+
+			this.isFullscreen = !this.isFullscreen;
+			this.width = size.w;
+			this.height = size.h;
+			this.canvas.size(this.width, this.height);
+
 			this.back.size({width:this.width, height:this.height});
-			//this.back.position(100, 200);
+
 			this.centerVideo();
 			this.nativeControls.onFullscreen(this.isFullscreen, this.controls);
 		},
 
 		showControls: function(){
-			this.nativeControls.show();
+			if(this.fsRemoved) return;
+			this.nativeControls && this.nativeControls.show();
 		},
 
 		hideControls: function(){
-			this.nativeControls.hide();
+			if(this.fsRemoved) return;
+			this.nativeControls && this.nativeControls.hide();
 		},
 
-		centerVideo: function(){
-
-			var mw = this.naturalVideoWidth;
-			var mh = this.naturalVideoHeight;
-			var cw = this.isFullscreen ? window.screen.width  : this.width;
-			var ch = this.isFullscreen ? window.screen.height : this.height;
-			var ma = mh/mw;
-			var ca = ch/cw;
-			var x, y, w, h;
-
-			var videoIsSmaller = mw>cw || mh>ch;
-
-			if(this.useNaturalSize && !this.isFullscreen){
-				log('actual size');
-				x = (cw-mw)/2;
-				y = (ch-mh)/2;
-				w = this.naturalVideoWidth;
-				h = this.naturalVideoHeight;
-				this.video.size({width:this.naturalVideoWidth,height:this.naturalVideoHeight});
-
-			}else if(this.isFullscreen || videoIsSmaller){
-				log('video is smaller (or fullscreen)');
-				if(ma == ca){
-					// same
-					w = cw;
-					h = ch;
-					x = 0;
-					y = 0;
-				}else if(ca > ma){
-					// cn is taller
-					w = cw;
-					x = 0;
-					h = mh * cw/mw;
-					y = (ch - h)/2;
-
-				}else{
-					// cn is wider
-					h = ch;
-					y = 0;
-					w = mw * ch/mh
-					x = (cw - w)/2;
-				}
-
-
-
-			}else{
-				// tried making the video larger, using an even amount, 1.5, 2.0, etc.
-				// didn't work. 1.5 still crashed it. It was pretty large, though, 940 x 500 or something.
-				//
-				/*
-
-				var sizes = [1, 1.5, 2, 2.5, 3];
-				var size = sizes[0];
-				for(var i=0; i< sizes.length;i++){
-					var s = sizes[i];
-					log('size:', s, mw*s, mh*s);
-					if(mw*s > cw || mh*s > ch) break;
-					size = sizes[i];
-				}
-
-				w = mw*size;
-				h = mh*size;*/
-
-				log('scale video up');
-
-				w = this.naturalVideoWidth;
-				h = this.naturalVideoHeight;
-				x = (cw-w)/2;
-				y = (ch-h)/2;
-
-
-			}
-			log("center:", x, y, w, h, 'container:', cw, ch, 'media:', mw, mh, 'fullscreen', this.isFullscreen);
-			this.video.size({width:w,height:h});
-			this.video.position({x:x,y:y});
-			///
+		removeFullscreen: function(){
+			this.hideControls();
+			this.fsRemoved = true;
 		},
+
+
 
 		getMeta: function(){
 

@@ -13,7 +13,7 @@ define([
 	//		Can be used standalone, or as a component of a more versatile media
 	//		player, for browsers that can't play HTML5 video or specific video
 	//		codecs, like MP4 in Firefox, or anything in old IE.
-	//		
+	//
 	var log = logger('FLV', 1);
 
 	var
@@ -90,51 +90,55 @@ define([
 
 			register(this);
 
-			this.init(flashVars);
+			this.prepare(flashVars);
 		},
 
-
-		_onMeta: function(m){
-			// *** on iPad won't fire until PLAY **************************
-			this._metaHandle && this._metaHandle.remove();
-			m.isAd = this.isAd;
-			this.meta = lang.mix(this.meta || {}, m);
-			this.duration = m.duration;
-
-			if(m.path == this.src){
-				this.complete = false;
-				!this.tmr && this.setTimer();
+		_timerTries:5,
+		_timer:false,
+		setTimer: function(){
+			if(!this.swf() && !this._timer){
+				log('create timer');
+				this._timerTries--;
+				log('no swf for timer - retry ', this._timerTries, 'times. swf:', this.swf(), 'timer:', this._timer)
+				this.tmr = {
+					pause:function(){},
+					resume:function(){}
+				}
+				if(this._timerTries > 0){
+					b.timer(this.setTimer.bind(this), 200);
+				}
+				return;
 			}
 
-			log("META", m, this.duration);
-			if(!this.premetaFired){
-				this.premetaFired = 1;
-				this.onPreMeta(this.meta);
-			}
-			this._metaHandle = timer(this, function(){
-				this.onMeta(this.meta);
-			}, 30);
-		},
 
-		getMeta: function(){
-			if(!this.meta){
-				return {
-					isAd:this.isAd,
-					time:0,
-					duration:0,
-					remaining:0
-				};
-			}
-			var p = this.time / this.duration;
-			return {
-				p:p,
-				time: this.time,
-				duration:this.duration,
-				remaining:Math.max(0, this.duration-this.time),
-				isAd:this.isAd,
-				width:this.meta.width,
-				height:this.meta.height
-			}
+			this.id = lang.uid('FV');
+			this.tmr = timer(this, function(evt){
+				try{
+				var t = this.swf().getTime() || 0;
+				var p = t / this.duration;
+				this._timer = true;
+				this.time = t;
+				//console.log("    time", t)
+
+				this.onProgress(this.getMeta());
+
+				// use a large enough number here:
+				// .5 is greater than the 300ms timer, AND
+				// it allows enough time for onComplete to
+				// fire BEFORE pause - for reporting.
+				if(!this.seeking && !this.complete && t > this.duration - .5){
+					this.complete = true;
+					this.onComplete();
+					timer(this, function(){
+						log('onComplete pause:', this.tmr.pause());
+					}, 300);
+				}
+
+				}catch(e){console.error('set time err', this.id, evt.id, evt, e); this.tmr.stop(); }
+
+
+			}, Infinity, 300, 'debugX', {id:'FlashTimer.'+this.id});
+			//this.tmr.pause();
 		},
 
 		_onPreload: function(){
@@ -180,21 +184,16 @@ define([
 			}
 		},
 
-		tell: function(method, a1, a2, a3, a4, a5){
+		tell: function(method, a1){
+			//	summary:
+			//		Private method. All JS-to-SWF communication runs through
+			//		here so errors can be tracked. Also caches commands in the
+			//		event the SWF is not ready and triggers them when it is.
+			//
 			//console.log("tell...", method, a1)
 			if(this.ei_ready){
-
 				try{
 					this.swf()[method](a1);
-					/*switch(method){
-						case "doPlay": 		this.swf()['doPlay'](); break;
-						case "doPause": 	this.swf().doPause(); break;
-						case "seek": 		this.swf().seek(a1); break;
-						case "doVolume": 	this.swf().doVolume(a1); break;
-						case "setVideo": 	this.swf().setVideo(a1); break;
-						case "showFullscreen": !this.isAd && this.swf().showFullscreen(); break;
-						case "hideFullscreen": !this.isAd && this.swf().hideFullscreen(); break;
-					}*/
 					return true;
 				}catch(e){
 					console.error("swf."+method+" failed ", e);
@@ -205,6 +204,57 @@ define([
 			}
 			return false;
 		},
+
+		/************************************************************************
+		 *																		*
+		 *						Common Method Signatures						*
+		 *																		*
+		 ************************************************************************/
+
+		_onMeta: function(m){
+			// *** on iPad won't fire until PLAY **************************
+			this._metaHandle && this._metaHandle.remove();
+			m.isAd = this.isAd;
+			this.meta = lang.mix(this.meta || {}, m);
+			this.duration = m.duration;
+
+			if(m.path == this.src){
+				this.complete = false;
+				!this.tmr && this.setTimer();
+			}
+
+			log("META", m, this.duration);
+			if(!this.premetaFired){
+				this.premetaFired = 1;
+				this.onPreMeta(this.meta);
+			}
+			this._metaHandle = timer(this, function(){
+				this.onMeta(this.meta);
+			}, 30);
+		},
+
+		getMeta: function(){
+			if(!this.meta){
+				return {
+					isAd:this.isAd,
+					time:0,
+					duration:0,
+					remaining:0
+				};
+			}
+			var p = this.time / this.duration;
+			return {
+				p:p,
+				time: this.time,
+				duration:this.duration,
+				remaining:Math.max(0, this.duration-this.time),
+				isAd:this.isAd,
+				width:this.meta.width,
+				height:this.meta.height
+			}
+		},
+
+
 		hide: function(){
 			// can't actually hide a Flash video.
 			// this is here to maintain a common signature.
@@ -234,15 +284,18 @@ define([
 			this.tell("doPlay");
 			this.tmr && this.tmr.resume();
 		},
+
 		pause: function(){
 			log('PAUSE', this.tmr)
 			this.tell("doPause");
 			this.tmr && this.tmr.pause();
 		},
+
 		restart: function(){
 			log(' *** Video restart');
 			this.seek(0);
 		},
+
 		seek: function(cmd){
 
 			// VAST doesn't work well with .1
@@ -309,58 +362,8 @@ define([
 			}
 		},
 
-		goFullscreen: function(isFullscreen){
-			log('goFullscreen', isFullscreen);
-		},
-
-
-
-		_timerTries:5,
-		_timer:false,
-		setTimer: function(){
-			if(!this.swf() && !this._timer){
-				log('create timer');
-				this._timerTries--;
-				log('no swf for timer - retry ', this._timerTries, 'times. swf:', this.swf(), 'timer:', this._timer)
-				this.tmr = {
-					pause:function(){},
-					resume:function(){}
-				}
-				if(this._timerTries > 0){
-					b.timer(this.setTimer.bind(this), 200);
-				}
-				return;
-			}
-
-
-			this.id = lang.uid('FV');
-			this.tmr = timer(this, function(evt){
-				try{
-				var t = this.swf().getTime() || 0;
-				var p = t / this.duration;
-				this._timer = true;
-				this.time = t;
-				//console.log("    time", t)
-
-				this.onProgress(this.getMeta());
-
-				// use a large enough number here:
-				// .5 is greater than the 300ms timer, AND
-				// it allows enough time for onComplete to
-				// fire BEFORE pause - for reporting.
-				if(!this.seeking && !this.complete && t > this.duration - .5){
-					this.complete = true;
-					this.onComplete();
-					timer(this, function(){
-						log('onComplete pause:', this.tmr.pause());
-					}, 300);
-				}
-
-				}catch(e){console.error('set time err', this.id, evt.id, evt, e); this.tmr.stop(); }
-
-
-			}, Infinity, 300, 'debugX', {id:'FlashTimer.'+this.id});
-			//this.tmr.pause();
+		resize: function(isFullscreen){
+			//log('goFullscreen', isFullscreen);
 		}
 	});
 });

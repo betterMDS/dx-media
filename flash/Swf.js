@@ -56,10 +56,10 @@ define([
 		loader:false,
 
 		constructor: function(options){
-			this.init(options);
+			this.prepare(options);
 		},
 
-		init: function(options){
+		prepare: function(options){
 			options = options || {};
 
 			options.isDebug = options.isDebug || false;

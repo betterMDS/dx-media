@@ -63,6 +63,8 @@ define([
 			log('video ready.')
 		},
 
+
+
 		setupEvents: function(){
 			if(has('iphone')) return;
 
@@ -71,7 +73,7 @@ define([
 			this.connection = on.multi(this.domNode, {
 				"play": "onPlay",
 				"pause": "onPause",
-				"progress": "_load",
+				"progress": "_onDownload",
 				"error": "onError",
 				"timeupdate": "_onProgress",
 				"ended": function(){
@@ -80,10 +82,6 @@ define([
 					this.hasPlayed = false;
 					this.onComplete(this.getMeta())
 				},
-				"abort": "onAbort",
-				"empty": "onEmpty",
-				"emptied": "onEmptied",
-				"waiting": "onWaiting",
 				"seeked":"onSeeked",
 				 "loadedmetadata": function(evt){
 					log("   ---------- > meta pre event:", evt)
@@ -113,64 +111,11 @@ define([
 			},10000, 200);
 		},
 
-		disconnectEvents: function(){
-			this.disWasPlaying = this.isPlaying();
-			this.pause();
-			this.connection.pause();
-			this.subscriptions.pause();
-		},
-
-		destroy: function(){
-			this.pause();
-			this.disconnectEvents();
-			this.inherited(arguments);
-		},
-		reconnect: function(){
-			this.connection.resume();
-			this.subscriptions.resume();
-			log('reconnect', this.disWasPlaying);
-			this.disWasPlaying && this.play();
-			this.disWasPlaying = false;
-		},
-
-
-
-		reload: function(path){
-			on.once(this, "onMeta", this, function(){
-				this.domNode.currentTime = .1
-				this.domNode.play();
-			});
-			this.pause();
-			this.domNode.src = path;
-			this.domNode.load();
-		},
-
-		restart: function(){
-			// restart
-			log(' ------------------------------------------ restart video');
-			if(this.isPlaying()){
-				this.seek(0);
-			}else{
-				this.show();
-				this.complete = false;
-				// without the pause, Safari crashes:
-				timer(this, "onPlay", 1);
-				timer(this, function(){
-					this.domNode.currentTime = .1;
-					this.domNode.play();
-				}, 260);
-				this.onRestart(this.getMeta());
-			}
-		},
-
-		getMeta: function(){
-			var p = this.domNode.currentTime / this.duration;
-			return {
-				p:p,
-				time: this.domNode.currentTime,
-				duration:this.duration,
-				remaining:Math.max(0, this.duration-this.domNode.currentTime),
-				isAd:this.isAd
+		onSeeked: function(){
+			// when does this actually fire?
+			log(' --------------------- onSeeked')
+			if(this.complete && !this.domNode.paused){
+				this.onRestart();
 			}
 		},
 
@@ -201,13 +146,10 @@ define([
 			if(m.duration) this.onProgress(m);
 		},
 
-		onError: function(evt){
-			// code 4 == no source. what else?
-			console.error("Video Error:", evt.target.error.code, evt.target.src); //evt.target.error.code,
-			this.inherited(arguments);
-		},
 
-		_load: function(evt){
+
+		_onDownload: function(evt){
+			//
 			var p, v = this.domNode;
 
 			if(evt.total){
@@ -223,8 +165,93 @@ define([
 			this.onDownload({p:p});
 		},
 
-		resize: function(){
-			var o = dom.box(this.domNode);
+		// TODO:
+		// connecting events needs to be a common signature
+		disconnectEvents: function(){
+			this.disWasPlaying = this.isPlaying();
+			this.pause();
+			this.connection.pause();
+			this.subscriptions.pause();
+		},
+
+		reconnect: function(){
+			this.connection.resume();
+			this.subscriptions.resume();
+			log('reconnect', this.disWasPlaying);
+			this.disWasPlaying && this.play();
+			this.disWasPlaying = false;
+		},
+
+		_setVideo: function(p){
+			var path = p.path || p;
+			if(!path) return;
+			log("Video._setVideo......", path);
+			timer(this, function(){
+				this.complete = false;
+				this.domNode.src = path;
+				this.domNode.load();
+				timer(this, 'play', 200, {debug:1});
+			}, 100);
+		},
+
+		/************************************************************************
+		 *																		*
+		 *						Common Method Signatures						*
+		 *																		*
+		 ************************************************************************/
+
+		destroy: function(){
+			this.pause();
+			this.disconnectEvents();
+			this.inherited(arguments);
+		},
+
+		reload: function(path){
+			on.once(this, "onMeta", this, function(){
+				this.domNode.currentTime = .1
+				this.domNode.play();
+			});
+			this.pause();
+			this.domNode.src = path;
+			this.domNode.load();
+		},
+
+		restart: function(){
+			log(' ------------------------------------------ restart video');
+			if(this.isPlaying()){
+				this.seek(0);
+			}else{
+				this.show();
+				this.complete = false;
+				// without the pause, Safari crashes:
+				timer(this, "onPlay", 1);
+				timer(this, function(){
+					this.domNode.currentTime = .1;
+					this.domNode.play();
+				}, 260);
+				this.onRestart(this.getMeta());
+			}
+		},
+
+		getMeta: function(){
+			var p = this.domNode.currentTime / this.duration;
+			return {
+				p:p,
+				time: this.domNode.currentTime,
+				duration:this.duration,
+				remaining:Math.max(0, this.duration-this.domNode.currentTime),
+				isAd:this.isAd
+			}
+		},
+
+		onError: function(evt){
+			// code 4 == no source. what else?
+			console.error("Video Error:", evt.target.error.code, evt.target.src); //evt.target.error.code,
+			this.inherited(arguments);
+		},
+
+		centerVideo: function(){
+			var o = dom.box(this.domNode.parentNode);
 			var v = this.domNode;
 
 			var ah = o.w/this.videoWidth*this.videoHeight || o.h;
@@ -248,7 +275,7 @@ define([
 			}
 		},
 
-		goFullscreen: function(isFullscreen){
+		resize: function(isFullscreen){
 			this.isFullscreen = isFullscreen;
 			var s = isFullscreen ?
 			{
@@ -261,73 +288,37 @@ define([
 			};
 			dom.style(this.domNode, s);
 
+			this.centerVideo();
+			
 			log('GO FULL!')
 		},
 
-		onClick: function(){
-			log(' --------------------- CLICK');
-			this.domNode.isAd = this.isAd;
-			topic.pub("/video/on/click", this.domNode);
-		},
-		onAbort: function(){ log("abort"); this.onPause(); },
-		onEmpty: function(){ log("empty"); },
-		onEmptied: function(){ log("emptied"); },
-		onWaiting: function(){ log("waiting"); },
-		onSeeked: function(){
-			if(this.complete && !this.domNode.paused){
-				this.onRestart();
-			}
-		},
-
-
-		onStart: function(){
-			topic.pub("/video/on/start", this.meta);
-		},
-
-		onPlay: function(){
-			log("onPlay");
-			topic.pub("/video/on/play", this.meta);
-			if(this.isFullscreen){
-				// play button pressed on Quicktime player and is not detectable
-				topic.pub("/button/play");
-			}
-			if(!this.hasPlayed) this.onStart();
-			this.hasPlayed = true;
-		},
-		onPause: function(){
-
-			log("onPause");
-			topic.pub("/video/on/pause", this.meta);
-			if(this.isFullscreen){
-				// play button pressed on Quicktime player and is not detectable
-				topic.pub("/button/pause");
-			}
-		},
 		play: function(){
 			log('play me');
 			this.domNode.play();
 		},
+
 		pause: function(){
 			log('pause me');
 			this.domNode.pause();
 		},
+
 		seek: function(cmd){
 			var diff = 0;
 			if(cmd === "start"){
-				wasPlaying = this.isPlaying();
+				this.wasPlaying = this.isPlaying();
 				//console.warn('SEEK START, [played:', this.hasPlayed, 'wasPlaying', wasPlaying);
 				if(!this.hasPlayed){
-					topic.pub("/video/on/play", this.meta);
+					// need to do something...
+					//topic.pub("/video/on/play", this.meta);
 				}
 				this.timeWas = this.domNode.currentTime;
 				this.pause();
 			}else if(cmd === "end"){
-				//console.warn('SEEK START, [played:', this.hasPlayed, 'wasPlaying', wasPlaying);
-				if(wasPlaying){
+				if(this.wasPlaying){
 					this.play();
 				}else{
-					//topic.pub("/video/on/pause", this.meta);
-					this.onPause();
+					this.pause();
 				}
 				diff = this.domNode.currentTime - this.timeWas;
 			}else{
@@ -337,54 +328,43 @@ define([
 			var m = this.getMeta();
 			m.type = cmd || 'seeking';
 			m.change = diff;
-			topic.pub('/video/on/seek', m);
-
-
+			this.onSeek(m);
 		},
+
 		volume: function(p){
 			this.domNode.volume = p;
-		},
-
-		_setVideo: function(p){
-			var path = p.path || p;
-			if(!path) return;
-			console.warn("Video._setVideo......", path);
-			timer(this, function(){
-				this.complete = false;
-				this.domNode.src = path;
-				this.domNode.load();
-				timer(this, 'play', 200, {debug:1});
-			}, 100);
-		},
-
-		setVideo: function(path, isAd){
-			this.isAd = isAd;
-			log("Video.setVideo:", path, ' == ', this.domNode.src);
-
-			if(this.domNode && this.domNode.src && string.urlToObj(path).filename == string.urlToObj(this.domNode.src).filename){
-				log('restart current video');
-				this.restart();
-			}else if(!this.domNode.src){
-				log('setting for the first time...')
-				this.domNode.src = path;
-				timer(this, 'play', 200, {debug:1});
-				timer(this, function(){
-					log('playing or what?');
-				}, 200);
-			}else{
-				log('set new video...');
-				this._setVideo({path:path});
-			}
-		},
-
-		loadVideo: function(path, isAd){
-			this.isAd = isAd;
-			this.domNode.src = path;
 		},
 
 		isPlaying: function(){
 			log('isPlaying, complete:', this.complete, 'paused:', this.domNode.paused)
 			return this.complete ? false : !this.domNode.paused;
+		},
+
+
+
+		load: function(path, isAd){
+			this.isAd = !!isAd;
+			log("Video.setVideo:", path, ' == ', this.domNode.src);
+
+			// The reason for the aggressive check of new src to current src is
+			// if a relative path is passed, the video node converts it to
+			// absolute, so src == node.src will not work.
+			// NOTE this could fail if two similar video names from different
+			// locations are used.
+			if(this.domNode && this.domNode.src && string.urlToObj(path).filename == string.urlToObj(this.domNode.src).filename){
+				log('restart current video');
+				this.restart();
+
+			}else if(!this.domNode.src){
+				log('setting for the first time...')
+				this.domNode.src = path;
+				// check autoplay? What if in a playlist?
+				if(this.autoplay) timer(this, 'play', 200, {debug:1});
+
+			}else{
+				log('set new video...');
+				this._setVideo({path:path});
+			}
 		}
 	});
 
