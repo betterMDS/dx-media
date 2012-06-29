@@ -8,6 +8,7 @@
 	bottom:0px;
 	background: -moz-linear-gradient(top, #37383e 0%, #2d2d2d 49%, #222222 51%);
 	background: -webkit-linear-gradient(top, #37383e 0%, #2d2d2d 49%, #222222 51%);
+	filter: progid:DXImageTransform.Microsoft.gradient(enabled='true', startColorstr=#FF37383e, endColorstr=#FF222222, gradientType=0);
 
 	font-family:sans-serif;
 	font-size:11px;
@@ -46,6 +47,7 @@
 	display:inline-block;
 	cursor:pointer;
 }
+
 .dxIcon{
 	display:inline-block;
 	width:26px;
@@ -53,6 +55,9 @@
 	background-image:url(icons.png);
 	background-repeat:no-repeat;
 }
+
+
+
 .dxIcon.dxFacebookBtn{				background-position:-80px -160px;	}
 .dxIcon.dxFacebookBtn:hover{		background-position:-120px -160px;	}
 .dxIcon.dxTwitterBtn{				background-position:-0px -160px;	}
@@ -101,29 +106,39 @@
 	background-image:url(icons.png);
 	background-repeat:no-repeat;
 	opacity:1;
+	filter:progid:DXImageTransform.Microsoft.Alpha(opacity=100);
 
 }
 .normal{
 	opacity:1;
 	-webkit-transition: opacity 500ms linear;
 	-moz-transition: opacity 500ms linear;
+	transition: opacity 500ms linear;
 }
 .hover{
 	-webkit-transition: opacity 500ms linear;
 	-moz-transition: opacity 500ms linear;
+	transition: opacity 500ms linear;
 	opacity:0;
+	filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);
 }
+
 .active{
 	opacity:0;
+	filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);
+
 }
 .dxIconFx:hover .normal{
 	opacity:0;
+	filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);
 }
 .dxIconFx:hover .hover{
 	opacity:1;
+	filter:progid:DXImageTransform.Microsoft.Alpha(opacity=100);
 }
 .dxIconFx:active .active{
 	opacity:1;
+	filter:progid:DXImageTransform.Microsoft.Alpha(opacity=100);
 }
 
 .dxPlayIcon .normal{ 	background-position:0px 0px; }
@@ -283,4 +298,20 @@
 }
 .dxScreenPlayButton.dxMuted:hover{
 	background-position: -280px -360px;
+}
+
+
+.dxSlider{
+	display: inline-block;
+}
+.dxSlider.bvVolume{
+	display: block;
+}
+.dj_ie7 .dxSlider,
+.dj_ie7 .dxIcon,
+.dj_ie7 .dxButton,
+.dj_ie7 .dxTime, .dj_ie7 .dxDuration,
+.dj_ie7 .dxControlbar .left a, .dj_ie7 .dxControlbar .right a{
+	display: inline;
+	zoom:1;
 }

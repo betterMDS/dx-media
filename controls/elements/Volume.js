@@ -42,8 +42,6 @@ define([
 
 		onClick: function(){
 			console.log('click');
-
-
 		}
 	});
 });

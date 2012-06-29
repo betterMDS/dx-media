@@ -29,9 +29,8 @@
 	<script>
 		require([
 
-				"dojo",
-				"dojo/parser",
-				"dojo/domReady!",
+				"dx-alias/parser!",
+				//'dojo/parser',
 				"dx-media/controls/Controller",
 
 				"dx-alias/shim",
@@ -40,13 +39,16 @@
 				"dx-media/controls/Controlbar",
 				"dx-media/controls/elements/all"
 
-			], function(dojo, parser, ready, Controller){
+			], function(dxParser, Controller){
 
-			parser.parse().then(function(){
-				console.log('parsed')
-			}, function(e){
-				console.error('parse error', e)
-			});
+//dxParser.parse().then(function(){
+	u = m
+
+	goFoo();
+
+//})
+
+
 
 			new Controller({
 				video:'video',

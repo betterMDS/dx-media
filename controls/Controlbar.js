@@ -1,5 +1,6 @@
 define([
 	"dojo/_base/declare",
+	"dojo/uacss",
 	"dijit/_Container",
 	"dx-alias/Widget",
 	"dx-alias/dom",
@@ -7,7 +8,7 @@ define([
 	"dx-alias/lang",
 	"dx-alias/log",
 	"dx-timer/timer"
-], function(declare, _Container, Widget, dom, on, lang, logger, timer){
+], function(declare, uacss, _Container, Widget, dom, on, lang, logger, timer){
 	//	summary:
 	//		Media player container widget for controls (play button, etc).
 	//

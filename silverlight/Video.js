@@ -72,6 +72,7 @@ define([
 		renderer:'silverlight',
 
 		postCreate: function(){
+	//z = q
 			this.hasHtmlControls = false; // TODO: really check for this
 			this.init();
 		},

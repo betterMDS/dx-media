@@ -13,6 +13,7 @@ define([
 
 		postCreate: function(){
 			this.inherited(arguments);
+			dom.css(this.domNode, 'bvVolume');
 		}
 	});
 });

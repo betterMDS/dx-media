@@ -14,7 +14,7 @@ define([
 	//		Handle Slideshow and Vtour
 	//
 	//
-	var log = logger('VC', 1);
+	var log = logger('VC', 0);
 
 	return declare('dx-media.controls.Controller', [Widget], {
 
@@ -48,6 +48,7 @@ define([
 		},
 
 		init: function(){
+
 			if(!this.video || !this.controls){
 				console.error('Controller must be associated with a Video and a Controlbar.');
 				return;

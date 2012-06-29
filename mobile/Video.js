@@ -15,7 +15,7 @@ define([
 	//		devices.
 	//		This is also the Base Class for the other Video renderers.
 	//
-	var log = logger('MOV', 0);
+	var log = logger('MOV', 1);
 
 	var
 		HTML5TYPES = {
@@ -65,7 +65,7 @@ define([
 					type:deriveType(dom.prop(node, 'src'))
 				}];
 			}
-
+log('byTag')
 			var sources = dom.byTag('source', node);
 			log('sources:', sources)
 			if(!sources || !sources.length) return [];
@@ -78,6 +78,7 @@ define([
 					type:dom.prop(node, 'type') || deriveType(dom.prop(node, 'src'))
 				});
 			}, this);
+			log('return...')
 			return a;
 		}
 
@@ -113,6 +114,7 @@ define([
 
 
 		constructor: function(/*Object*/options, node){
+			log('mobile')
 
 			// A properly formed video tag works fine out of the gate.
 			if(node){

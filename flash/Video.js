@@ -48,6 +48,7 @@ define([
 
 		onMeta: function(meta, ref){
 			// [private]
+			log('MEATA!')
 			pub('onMeta', ref, meta);
 		},
 		onClick: function(ref){
@@ -69,7 +70,7 @@ define([
 		loadSwf:require.toUrl('dx-media') + '/resources/video.swf',
 
 		constructor: function(options){
-
+//z = p;
 			// mobile/Video is used to find the src from markup
 			this.inherited(arguments);
 

@@ -41,11 +41,11 @@ define([
 		text:"", // not implemented
 
 		postMixInProperties: function(){
-			this.tranform = has('transform');
+			this.transform = has('transform');
 
 			this.useCanvas = !isIE;
 
-			log('this.tranform', this.tranform);
+			log('this.transform', this.transform);
 
 		},
 

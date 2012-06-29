@@ -127,7 +127,7 @@ define([
 			log('vars:', o);
 			this.currentLoadEvent = o.loadEvent = lang.uid("SwfLoad");
 			window[o.loadEvent] = function(){
-				console.info('LOAD EVENT');
+				//console.info('LOAD EVENT');
 				this._onSwfEmbeded();
 			}.bind(this);
 			var p = this.flashArgs;
