@@ -72,6 +72,7 @@ var profile = (function(){
 		layers:{
 			"dojo/dojo":{
 				include:[
+					"dojo/Deferred",
 					"dojo/Evented",
 					"dojo/NodeList-dom",
 					"dojo/Stateful",
@@ -79,7 +80,6 @@ var profile = (function(){
 					"dojo/_base/Deferred",
 					"dojo/_base/NodeList",
 					"dojo/_base/array",
-					"dojo/_base/browser",
 					"dojo/_base/browser",
 					"dojo/_base/config",
 					"dojo/_base/connect",
@@ -91,12 +91,10 @@ var profile = (function(){
 					"dojo/_base/kernel",
 					"dojo/_base/lang",
 					"dojo/_base/loader",
-					"dojo/_base/loader",
 					"dojo/_base/sniff",
 					"dojo/_base/unload",
 					"dojo/_base/url",
 					"dojo/_base/window",
-					"dojo/_base/xhr",
 					"dojo/_base/xhr",
 					"dojo/aspect",
 					"dojo/cache",
@@ -110,9 +108,20 @@ var profile = (function(){
 					"dojo/dom-prop",
 					"dojo/dom-style",
 					"dojo/domReady",
-					"dojo/domReady",
+					"dojo/domReady!",
+					"dojo/errors/CancelError",
+					"dojo/errors/RequestError",
+					"dojo/errors/RequestTimeoutError",
+					"dojo/errors/create",
 					"dojo/fx/easing",
 					"dojo/has",
+					"dojo/has!0",
+					"dojo/has!dojo/_base/browser",
+					"dojo/has!dojo/_base/loader",
+					"dojo/has!dojo/_base/window",
+					"dojo/has!dojo/_base/xhr",
+					"dojo/has!dojo/domReady",
+					"dojo/has!dojo/promise/instrumenting",
 					"dojo/io-query",
 					"dojo/io/script",
 					"dojo/json",
@@ -121,18 +130,28 @@ var profile = (function(){
 					"dojo/mouse",
 					"dojo/on",
 					"dojo/parser",
+					"dojo/promise/Promise",
+					"dojo/promise/instrumenting",
 					"dojo/query",
 					"dojo/ready",
+					"dojo/request/handlers",
+					"dojo/request/script",
+					"dojo/request/util",
+					"dojo/request/watch",
+					"dojo/request/xhr",
 					"dojo/selector/_loader",
-					"dojo/selector/lite",
+					"dojo/selector/_loader!default",
+					"dojo/selector/acme",
 					"dojo/sniff",
 					"dojo/string",
 					"dojo/text",
 					"dojo/text",
 					"dojo/topic",
 					"dojo/touch",
-					"dojo/i18n",
+					"dojo/uacss",
+					"dojo/when",
 
+					"dijit/Destroyable",
 					"dijit/_Container",
 					"dijit/_TemplatedMixin",
 					"dijit/_WidgetBase",
@@ -143,43 +162,48 @@ var profile = (function(){
 
 			,"dx-media/layer":{
 				include:[
-					"dx-media/image/Image",
-					"dx-media/image/Preview",
-					"dx-media/player/Mobile",
-					"dx-media/player/ScreenPlayButton",
-					"dx-media/player/controls/Controls",
-					"dx-media/player/controls/Embed",
-					"dx-media/player/controls/Facebook",
-					"dx-media/player/controls/Slideshow",
-					"dx-media/player/controls/Twitter",
-					"dx-media/player/controls/Video",
-					"dx-media/player/controls/Vtour",
-					"dx-media/player/controls/_Button",
-					"dx-media/plugins/VAST",
-					"dx-media/slideshow/Photo",
-					"dx-media/slideshow/Slideshow",
-					"dx-media/video/Mobile",
-					"dx-media/vtour/Vtour",
-					"dx-media/vtour/VtourCanvas",
+					"dx-media/controls/Controlbar",
+					"dx-media/controls/elements/Embed",
+					"dx-media/controls/elements/Facebook",
+					"dx-media/controls/elements/ScreenPlayButton",
+					"dx-media/controls/elements/Slideshow",
+					"dx-media/controls/elements/Twitter",
+					"dx-media/controls/elements/Video",
+					"dx-media/controls/elements/Vtour",
+					"dx-media/controls/elements/_Base",
+					"dx-media/controls/elements/_Button",
 
+					"dx-media/html5/Image",
+					"dx-media/html5/Photo",
+					"dx-media/html5/Preview",
+					"dx-media/html5/Slideshow",
+					"dx-media/html5/Vtour",
+					"dx-media/html5/VtourCanvas",
+
+					"dx-media/mobile/Video",
 					"dx-media/mobile/common",
 					"dx-media/mobile/sniff",
-					"dx-media/mobile/uacss"
+					"dx-media/mobile/uacss",
+
+					"dx-media/player/Mobile",
+
+					"dx-media/plugins/VAST"
 				]
 			}
 			,"dx-alias/layer":{
 				include:[
+					"dx-alias/Widget",
 					"dx-alias/dom",
+					"dx-alias/groups",
+					"dx-alias/has",
 					"dx-alias/lang",
 					"dx-alias/log",
 					"dx-alias/mouse",
 					"dx-alias/on",
 					"dx-alias/shim",
-					"dx-alias/string"
-				]
-			}
-			,"dx-timer/layer":{
-				include:[
+					"dx-alias/string",
+					"dx-alias/topic",
+
 					"dx-timer/timer"
 				]
 			}

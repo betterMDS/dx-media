@@ -56,8 +56,6 @@ define([
 		}
 
 		getSources = function(node){
-			log('findSource...', sources);
-
 			if(dom.prop(node, 'src')){
 				return [{
 					src:dom.prop(node, 'src'),
@@ -65,9 +63,7 @@ define([
 					type:deriveType(dom.prop(node, 'src'))
 				}];
 			}
-log('byTag')
 			var sources = dom.byTag('source', node);
-			log('sources:', sources)
 			if(!sources || !sources.length) return [];
 
 			var a = [];
@@ -78,7 +74,6 @@ log('byTag')
 					type:dom.prop(node, 'type') || deriveType(dom.prop(node, 'src'))
 				});
 			}, this);
-			log('return...')
 			return a;
 		}
 
@@ -110,8 +105,6 @@ log('byTag')
 		// renderer: [readonly] String
 		// 		The type of video renderer to be used.
 		renderer:'html5',
-
-
 
 		constructor: function(/*Object*/options, node){
 			log('mobile')

@@ -295,7 +295,7 @@ define([
 		zoom: function(adj){
 			adj = adj || 0;
 			this.zoomed += adj;
-			this.zoomed = lang.minMax(this.zoomed, 1, 3);
+			this.zoomed = lang.clamp(this.zoomed, 1, 3);
 			this.ctrX = (this.width - this.zoomed*this.width)/2;
 			//console.log("zooom", this.zoomed, "adj:", adj)
 			this.adjustY();

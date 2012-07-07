@@ -8,7 +8,7 @@ define([
 	"dx-timer/timer"
 ], function(declare, Img, dom, lang, on, logger, timer){
 
-	var log = logger('PRE', 0);
+	var log = logger('PRE', 1);
 
 	return declare('dx-media.html5.Preview', [Img], {
 
@@ -34,6 +34,8 @@ define([
 		},
 
 		resize: function(size){
+			if(!size) return; // rogue dojo functionality telling us what to do
+			//console.trace();
 			if(!this.imageAspect){
 				timer(this, function(){
 					this.onSize(size);
@@ -41,7 +43,7 @@ define([
 				return;
 			}
 
-			//log('size', size.w, size.h);
+			log('size', size.w, size.h);
 			this.boxAspect = size.w / size.h;
 
 			if(this.boxAspect == this.imageAspect){
