@@ -46,20 +46,21 @@ EXAMPLES
 __EOF__
 }
 
-name="dx-media"
-tempDir="TEMP"
-releaseDir="deploy"
+name="mobile"
+tempDir="../TEMP"
+releaseDir="../deploy"
 #buildDir=$releaseDir
 buildDir=$tempDir
 
 
 nano() {
-	echo "Creating nano deployment $releaseDir"
-	./nano.sh $tempDir $releaseDir
+	echo "Creating nano deployment"
+	#./nano.sh "../"$tempDir "../"$releaseDir
+	node ../../node/nano.js ../dx-media/build/dx-media-nano.js "../"$tempDir "../"$releaseDir
 }
 delete() {
-	echo "Deleting old directory" `pwd`"/../$buildDir"
-	rm -rf $buildDir
+	echo "Deleting old directory"
+	rm -rf "./../"$buildDir
 }
 
 echo "\n\n\n\n\nBuilding $name"
@@ -72,13 +73,13 @@ case $1 in
 
 --dbhelp)
     echo "Dojo Build System help..."
-	../util/buildscripts/build.sh --help
+	../../util/buildscripts/build.sh --help
 	;;
 
 -r)
     delete
 	echo "release build with switches --layerOptimize closure --optimize closure --cssOptimize comments.keepLines" $@
-	../util/buildscripts/build.sh -p $name".profile.js" --layerOptimize closure.keepLines --optimize closure --cssOptimize comments.keepLines $@
+	../../util/buildscripts/build.sh -p $name".profile.js" --layerOptimize closure.keepLines --optimize closure --cssOptimize comments.keepLines $@
 	nano
 	;;
 
@@ -86,7 +87,7 @@ case $1 in
 
 	echo "debug build to folder: $buildDir"
 	shift
-	../util/buildscripts/build.sh -p $name".profile.js" -releaseDir $buildDir --layerOptimize 0 --optimize 0 --cssOptimize comments.keepLines $@
+	../../util/buildscripts/build.sh -p $name".profile.js" -releaseDir $buildDir --layerOptimize 0 --optimize 0 --cssOptimize comments.keepLines $@
 	nano
 	delete
 	;;
@@ -95,6 +96,14 @@ case $1 in
     delete
 	;;
 
+--check-discovery)
+    ../../util/buildscripts/build.sh -p $name".profile.js" --check-discovery $@
+	;;
+
+--check-args)
+    ../../util/buildscripts/build.sh -p $name".profile.js" --check-args $@
+    ;;
+
 *)
     echo "invalid option provided; the first option must be one of --help, --dbhelp, -r, or -d; help follows..."
     echo
@@ -102,3 +111,13 @@ case $1 in
 	exit 1
     ;;
 esac
+
+
+# --check / no workee?
+# Process all command line switches and dump the computed profile to the console.
+#
+# --check-args
+# Process all command line switches and dump the raw profile resources to the console (the profile resources are not aggregated).
+#
+# --check-discovery / no workee?
+# Echo all discovered resources and exit

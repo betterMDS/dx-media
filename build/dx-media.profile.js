@@ -9,14 +9,21 @@ var profile = (function(){
 
 		copyOnly = function(filename, mid){
 			var list = {
-				"dx-media/dx-media.profile":1,
 				"dx-media/package.json":1
 			};
 			return (mid in list) || /resources\/[^.]+\.(?!css)/.test(mid);
 		},
 
 		ignore = function(filename, mid){
-			return /dx-dojo/.test(mid) || /deploy/.test(mid);
+			var list = {
+				"dx-media/build/dx-media-nano":1,
+				"dx-media/package.json":1,
+				"dx-media/build/package.json":1,
+				"dx-media/build/dx-media.profile":1,
+				"dx-media/README.md":1
+			};
+			//console.log('ignore:', mid, (mid in list) || /deploy/.test(mid))
+			return (mid in list) || /dx-dojo/.test(mid) || /deploy/.test(mid);
 		},
 
 		amd = function(filename, mid){
@@ -26,9 +33,6 @@ var profile = (function(){
 		};
 
 	return {
-		staticHasFeatures: {
-			selectorEngine:"lite"
-		},
 
 		selectorEngine:"lite",
 
@@ -44,169 +48,98 @@ var profile = (function(){
 			amd:amd
 		},
 
-		// relative to this file
-		basePath:".",
+		// these are all the has feature that affect the loader and/or the bootstrap
+		// the settings below are optimized for the smallest AMD loader that is configurable
+		// and include dom-ready support
+		staticHasFeatures:{
+			// dojo/dojo
+			'config-dojo-loader-catches':0,
 
-		// relative to basePath
-		//releaseDir:"./media-deploy",
+			// dojo/dojo
+			'config-tlmSiblingOfDojo':0,
 
-		packages:[
-			{
-				name:"dojo",
-				location:"../dojo"
-			},{
-				name:"dijit",
-				location:"../dijit"
-			},{
-				name:"dx-media",
-				location:"."
-			},{
-				name:"dx-alias",
-				location:"../dx-alias"
-			},{
-				name:"dx-timer",
-				location:"../dx-timer"
-			}
-		],
+			// dojo/dojo
+			'dojo-amd-factory-scan':0,
 
-		layers:{
-			"dojo/dojo":{
-				include:[
-					"dojo/Deferred",
-					"dojo/Evented",
-					"dojo/NodeList-dom",
-					"dojo/Stateful",
-					"dojo/_base/Color",
-					"dojo/_base/Deferred",
-					"dojo/_base/NodeList",
-					"dojo/_base/array",
-					"dojo/_base/browser",
-					"dojo/_base/config",
-					"dojo/_base/connect",
-					"dojo/_base/declare",
-					"dojo/_base/event",
-					"dojo/_base/fx",
-					"dojo/_base/html",
-					"dojo/_base/json",
-					"dojo/_base/kernel",
-					"dojo/_base/lang",
-					"dojo/_base/loader",
-					"dojo/_base/sniff",
-					"dojo/_base/unload",
-					"dojo/_base/url",
-					"dojo/_base/window",
-					"dojo/_base/xhr",
-					"dojo/aspect",
-					"dojo/cache",
-					"dojo/date/stamp",
-					"dojo/dom",
-					"dojo/dom-attr",
-					"dojo/dom-class",
-					"dojo/dom-construct",
-					"dojo/dom-form",
-					"dojo/dom-geometry",
-					"dojo/dom-prop",
-					"dojo/dom-style",
-					"dojo/domReady",
-					"dojo/domReady!",
-					"dojo/errors/CancelError",
-					"dojo/errors/RequestError",
-					"dojo/errors/RequestTimeoutError",
-					"dojo/errors/create",
-					"dojo/fx/easing",
-					"dojo/has",
-					"dojo/has!0",
-					"dojo/has!dojo/_base/browser",
-					"dojo/has!dojo/_base/loader",
-					"dojo/has!dojo/_base/window",
-					"dojo/has!dojo/_base/xhr",
-					"dojo/has!dojo/domReady",
-					"dojo/has!dojo/promise/instrumenting",
-					"dojo/io-query",
-					"dojo/io/script",
-					"dojo/json",
-					"dojo/keys",
-					"dojo/main",
-					"dojo/mouse",
-					"dojo/on",
-					"dojo/parser",
-					"dojo/promise/Promise",
-					"dojo/promise/instrumenting",
-					"dojo/query",
-					"dojo/ready",
-					"dojo/request/handlers",
-					"dojo/request/script",
-					"dojo/request/util",
-					"dojo/request/watch",
-					"dojo/request/xhr",
-					"dojo/selector/_loader",
-					"dojo/selector/_loader!default",
-					"dojo/selector/acme",
-					"dojo/sniff",
-					"dojo/string",
-					"dojo/text",
-					"dojo/text",
-					"dojo/topic",
-					"dojo/touch",
-					"dojo/uacss",
-					"dojo/when",
+			// dojo/dojo
+			'dojo-combo-api':0,
 
-					"dijit/Destroyable",
-					"dijit/_Container",
-					"dijit/_TemplatedMixin",
-					"dijit/_WidgetBase",
-					"dijit/main",
-					"dijit/registry"
-				]
-			}
+			// dojo/_base/config, dojo/dojo
+			'dojo-config-api':1,
 
-			,"dx-media/layer":{
-				include:[
-					"dx-media/controls/Controlbar",
-					"dx-media/controls/elements/Embed",
-					"dx-media/controls/elements/Facebook",
-					"dx-media/controls/elements/ScreenPlayButton",
-					"dx-media/controls/elements/Slideshow",
-					"dx-media/controls/elements/Twitter",
-					"dx-media/controls/elements/Video",
-					"dx-media/controls/elements/Vtour",
-					"dx-media/controls/elements/_Base",
-					"dx-media/controls/elements/_Button",
+			// dojo/main
+			'dojo-config-require':0,
 
-					"dx-media/html5/Image",
-					"dx-media/html5/Photo",
-					"dx-media/html5/Preview",
-					"dx-media/html5/Slideshow",
-					"dx-media/html5/Vtour",
-					"dx-media/html5/VtourCanvas",
+			// dojo/_base/kernel
+			'dojo-debug-messages':0,
 
-					"dx-media/mobile/Video",
-					"dx-media/mobile/common",
-					"dx-media/mobile/sniff",
-					"dx-media/mobile/uacss",
+			// dojo/dojo
+			'dojo-dom-ready-api':1,
 
-					"dx-media/player/Mobile",
+			// dojo/main
+			'dojo-firebug':0,
 
-					"dx-media/plugins/VAST"
-				]
-			}
-			,"dx-alias/layer":{
-				include:[
-					"dx-alias/Widget",
-					"dx-alias/dom",
-					"dx-alias/groups",
-					"dx-alias/has",
-					"dx-alias/lang",
-					"dx-alias/log",
-					"dx-alias/mouse",
-					"dx-alias/on",
-					"dx-alias/shim",
-					"dx-alias/string",
-					"dx-alias/topic",
+			// dojo/_base/kernel
+			'dojo-guarantee-console':1,
 
-					"dx-timer/timer"
-				]
-			}
+			// dojo/has
+			'dojo-has-api':1,
+
+			// dojo/dojo
+			'dojo-inject-api':1,
+
+			// dojo/_base/config, dojo/_base/kernel, dojo/_base/loader, dojo/ready
+			'dojo-loader':1,
+
+			// dojo/dojo
+			'dojo-log-api':0,
+
+			// dojo/_base/kernel
+			'dojo-modulePaths':0,
+
+			// dojo/_base/kernel
+			'dojo-moduleUrl':0,
+
+			// dojo/dojo
+			'dojo-publish-privates':0,
+
+			// dojo/dojo
+			'dojo-requirejs-api':0,
+
+			// dojo/dojo
+			'dojo-sniff':0,
+
+			// dojo/dojo, dojo/i18n, dojo/ready
+			'dojo-sync-loader':0,
+
+			// dojo/dojo
+			'dojo-test-sniff':0,
+
+			// dojo/dojo
+			'dojo-timeout-api':0,
+
+			// dojo/dojo
+			'dojo-trace-api':0,
+
+			// dojo/dojo
+			'dojo-undef-api':0,
+
+			// dojo/i18n
+			'dojo-v1x-i18n-Api':0,
+
+			// dojo/_base/xhr
+			'dojo-xhr-factory':0,
+
+			// dojo/_base/loader, dojo/dojo, dojo/on
+			'dom':1,
+
+			// dojo/dojo
+			'host-browser':1,
+
+			// dojo/_base/array, dojo/_base/connect, dojo/_base/kernel, dojo/_base/lang
+			'extend-dojo':1,
+
+			selectorEngine:"lite"
 		}
 	};
 
