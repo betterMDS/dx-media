@@ -44,6 +44,11 @@ switch(name){
 		dst = dstDir + '/dojo/dojo.js';
 		fs.copy(src, dst);
 		break;
+	case 'alias':
+		src = srcDir + '/dx-alias/layer.js';
+		dst = dstDir + '/dx-alias.js';
+		fs.copy(src, dst);
+		break;
 }
 
 /*

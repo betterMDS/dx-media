@@ -68,9 +68,9 @@ echo "\n\n\n\n\nBuilding $name"
 cd `dirname $0`
 
 
-echo "debug build to folder: $buildDir"
-#shift
-#../../util/buildscripts/build.sh -p $name".profile.js" -releaseDir $buildDir --layerOptimize 0 --optimize 0 --cssOptimize comments.keepLines -r $@
+echo $name" build to folder: $buildDir"
+shift
+../../util/buildscripts/build.sh -p $name".profile.js" -releaseDir $buildDir --layerOptimize 0 --optimize 0 --cssOptimize comments.keepLines -r $@
 copy
 #delete
 

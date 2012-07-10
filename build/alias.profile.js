@@ -2,14 +2,13 @@ var profile = (function(){
 
 	return {
 
+		// relative to this file
+		basePath:"../",
+
 		newlineFilter: function(s){
 		   // convert all DOS-style newlines to Unix-style newlines
 		   return s.replace(/\r\n/g, "\n").replace(/\n\r/g, "\n");
 		},
-
-		
-		// relative to this file
-		basePath:"../",
 
 		packages:[
 			{
@@ -24,43 +23,32 @@ var profile = (function(){
 			},{
 				name:"dx-timer",
 				location:"../dx-timer"
-			},{
-				name:"dx-media",
-				location:"."
 			}
 		],
 
-
+		deps:[
+			'../dojo/dojo',
+			'../dijit'
+		],
 
 		layers:{
-			"dx-media/layer":{
+
+			"dx-alias/layer":{
 				include:[
-					"dx-media/controls/Controlbar",
-					"dx-media/controls/elements/Embed",
-					"dx-media/controls/elements/Facebook",
-					"dx-media/controls/elements/ScreenPlayButton",
-					"dx-media/controls/elements/Slideshow",
-					"dx-media/controls/elements/Twitter",
-					"dx-media/controls/elements/Video",
-					"dx-media/controls/elements/Vtour",
-					"dx-media/controls/elements/_Base",
-					"dx-media/controls/elements/_Button",
+					"dx-alias/Widget",
+					"dx-alias/dom",
+					"dx-alias/groups",
+					"dx-alias/has",
+					"dx-alias/lang",
+					"dx-alias/log",
+					"dx-alias/mouse",
+					"dx-alias/on",
+					"dx-alias/shim",
+					"dx-alias/string",
+					"dx-alias/topic",
+					"dx-alias/parser",
 
-					"dx-media/html5/Image",
-					"dx-media/html5/Photo",
-					"dx-media/html5/Preview",
-					"dx-media/html5/Slideshow",
-					"dx-media/html5/Vtour",
-					"dx-media/html5/VtourCanvas",
-
-					"dx-media/mobile/Video",
-					"dx-media/mobile/common",
-					"dx-media/mobile/sniff",
-					"dx-media/mobile/uacss",
-
-					"dx-media/player/Mobile",
-
-					"dx-media/plugins/VAST"
+					"dx-timer/timer"
 				],
 				exclude:[
 					"dojo/Deferred",
@@ -139,24 +127,6 @@ var profile = (function(){
 					"dijit/_WidgetBase",
 					"dijit/main",
 					"dijit/registry"
-				]
-			}
-			,"dx-alias/layer":{
-				include:[
-					"dx-alias/Widget",
-					"dx-alias/dom",
-					"dx-alias/groups",
-					"dx-alias/has",
-					"dx-alias/lang",
-					"dx-alias/log",
-					"dx-alias/mouse",
-					"dx-alias/on",
-					"dx-alias/shim",
-					"dx-alias/string",
-					"dx-alias/topic",
-					"dx-alias/parser",
-
-					"dx-timer/timer"
 				]
 			}
 		}
