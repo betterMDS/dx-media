@@ -32,36 +32,14 @@
 
 	<script type="text/javascript">
 		require([
-			"dojo",
-			"dojo/domReady!",
-			"dojo/parser",
-			"dx-dojo/build",
-			"dx-media/player/Mobile",
-			"dx-media/mobile/Video",
-			"dx-media/html5/Vtour",
-			"dx-media/html5/Slideshow",
-			"dx-media/html5/Preview",
-
-			"dx-media/controls/Controlbar",
-			"dx-media/controls/elements/Facebook",
-			"dx-media/controls/elements/Twitter",
-			"dx-media/controls/elements/Embed",
-			"dx-media/controls/elements/Video",
-			"dx-media/controls/elements/Slideshow",
-			"dx-media/controls/elements/Vtour",
-			"dx-media/controls/elements/ScreenPlayButton",
-
-			"dx-media/plugins/VAST"
-
-		], function(dojo, ready, parser){
-			parser.parse();
-		});
+			"dx-alias/parser!"
+		], function(){});
 	</script>
 
 </head>
 <body>
 	<div class="view">
-		<div data-dojo-type="dx-media.player.Mobile" data-dojo-props="defaultView:'Video'">
+		<div data-dojo-type="dx-media/player/Mobile" data-dojo-props="defaultView:'Video'">
 
 			<div data-dojo-type="dx-media/html5/Preview" data-dojo-props="src:'media/images/SightAndSound.jpg'"></div>
 			<div data-dojo-type="dx-media/controls/elements/ScreenPlayButton"></div>

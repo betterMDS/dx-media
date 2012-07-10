@@ -8,7 +8,7 @@ define([
 	"dx-timer/timer"
 ], function(declare, Img, dom, lang, on, logger, timer){
 
-	var log = logger('PRE', 1);
+	var log = logger('PRE', 0);
 
 	return declare('dx-media.html5.Preview', [Img], {
 
@@ -16,7 +16,7 @@ define([
 
 		constructor: function(){
 			this.inherited(arguments);
-			on(this, 'onImageLoaded', this, 'onReady');
+			on.once(this, 'onImageLoaded', this, 'onReady');
 		},
 
 		postCreate: function(){
@@ -35,7 +35,7 @@ define([
 
 		resize: function(size){
 			if(!size) return; // rogue dojo functionality telling us what to do
-			//console.trace();
+
 			if(!this.imageAspect){
 				timer(this, function(){
 					this.onSize(size);

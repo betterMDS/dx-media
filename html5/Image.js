@@ -1,17 +1,14 @@
 define([
 	'dojo/_base/declare',
-	'dijit/_WidgetBase',
-	'dijit/_TemplatedMixin',
-	'dx-alias/lang',
+	'dx-alias/Widget',
 	'dx-alias/dom',
-	'dx-alias/on',
 	'dx-timer/timer',
 	'dx-alias/log'
-], function(declare, _WidgetBase, _TemplatedMixin, lang, dom, on, timer, logger){
+], function(declare, Widget, dom, timer, logger){
 
 	var log = logger('IMG', 0);
 
-	return declare('dx-media.html5.Image', [_WidgetBase, _TemplatedMixin], {
+	return declare('dx-media.html5.Image', [Widget], {
 
 		templateString:'<img />',
 		width:0,
@@ -131,7 +128,6 @@ define([
 		tries:2,
 		onImageLoaded: function(){
 			this.loaded = 1;
-			//dom.show(this.domNode);//this.show(); // In IE - be sure to SHOW the damn image or you get dimensions of zero!!!
 			if(!this.tempNode.width && this.tries-- > 0){
 				timer( this, function(){
 					//console.log(this.tries, "timed loaded image:", this.node.width, this.node.height);

@@ -26,11 +26,6 @@ var profile = (function(){
 			}
 		],
 
-		deps:[
-			'../dojo/dojo',
-			'../dijit'
-		],
-
 		layers:{
 
 			"dx-alias/layer":{

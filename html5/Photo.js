@@ -1,18 +1,16 @@
 define([
 	"dojo/_base/declare",
-	"dijit/_WidgetBase",
-	"dijit/_TemplatedMixin",
+	"dx-alias/Widget",
 	"./Image",
 	"dx-alias/dom",
 	"dx-timer/timer",
 	"dx-alias/lang",
-	"dx-alias/on",
 	"dx-alias/log"
-], function(declare, _WidgetBase, _TemplatedMixin, Img, dom, timer, lang, on, logger){
+], function(declare, Widget, Img, dom, timer, lang, logger){
 
 	var log = logger('PHO', 0);
 
-	return declare('dx-media.html5.Photo', [_WidgetBase, _TemplatedMixin], {
+	return declare('dx-media.html5.Photo', [Widget], {
 
 		templateString:'<div class="dxPhoto"></div>',
 		src:'',
@@ -39,9 +37,11 @@ define([
 			log('src:', this.src);
 			this.img = new Img({src:this.src, onload:cb, showing:0});
 			this.domNode.appendChild(this.img.domNode);
-			on(this.domNode, 'webkitTransitionEnd', this, 'onAniDone');
-			on(this.domNode, 'transitionend', this, 'onAniDone');
-			on(this.domNode, 'MozTransitionend', this, 'onAniDone');
+			this.on(this.domNode, {
+				'webkitTransitionEnd':'onAniDone',
+				'transitionend':'onAniDone',
+				'MozTransitionend':'onAniDone'
+			}, this);
 		},
 
 		drag: function(x){

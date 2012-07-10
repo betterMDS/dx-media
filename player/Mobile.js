@@ -1,18 +1,16 @@
 define([
 	"dojo/_base/declare",
-	"dojo/_base/connect",
-	"dojo/sniff",
 	"../mobile/common",
-	"dijit/_WidgetBase",
-	"dijit/_TemplatedMixin",
 	"dijit/_Container",
+	"dx-alias/Widget",
+	"dx-alias/has",
 	"dx-alias/dom",
 	"dx-alias/lang",
 	"dx-alias/on",
 	"dx-alias/topic",
 	"dx-alias/log",
 	"dx-timer/timer"
-], function(declare, connect, has, mobile, _WidgetBase, _TemplatedMixin, _Container, dom, lang, on, topic, logger, timer){
+], function(declare, mobile, _Container, Widget, has, dom, lang, on, topic, logger, timer){
 	//	summary:
 	//		A top-level class that is a mobile-only player.
 	//
@@ -20,7 +18,7 @@ define([
 	var screensize;
 	var isMobile = has('ios') || has('android');
 
-	return declare('dx-media.player.Mobile', [_WidgetBase, _TemplatedMixin, _Container], {
+	return declare('dx-media.player.Mobile', [Widget, _Container], {
 
 		templateString:'<div><div class="dxPlayerMobile" data-dojo-attach-point="containerNode"></div></div>',
 
@@ -32,7 +30,7 @@ define([
 			if(isMobile){
 				on(mobile, 'updateOrient', this, 'onResize');
 			}else{
-				connect.subscribe('/dojox/mobile/screenSize/tablet', this, 'onResize');
+				on.sub('/dojox/mobile/screenSize/tablet', this, 'onResize');
 				on(window, 'resize', this, 'onResize');
 			}
 		},
@@ -138,7 +136,7 @@ define([
 			mobile.hideAddressBar();
 
 			// seems to work, but after a few ms:
-			log('RESIZE', dom.box(this.domNode))
+			//log('RESIZE', dom.box(this.domNode))
 
 			this.onSize(dom.box(this.domNode));
 		},

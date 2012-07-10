@@ -1,5 +1,6 @@
 
 bvCallback({
+	root:'media/',
 	"image":[
 		{
 			"src":"previews/Img_029.jpg",
