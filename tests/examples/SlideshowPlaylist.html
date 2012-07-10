@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+    <title>Test Slideshow</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<link href="../resources/dxSlideshow.css" rel="stylesheet" />
+	<style>
+		html.mobile, .mobile body {
+			width: 100%;
+			margin: 0;
+			padding: 0;
+		}
+		.mobile body {
+			overflow-x: hidden;
+			-webkit-text-size-adjust: none;
+			background-color: #c5ccd3;
+			font-family: Helvetica;
+			font-size: 17px;
+		}
+		#player{
+			width:100%;
+			height:370px;
+			position:relative;
+		}
+
+		@media all and (max-width: 480px) {
+			html, body, #player {
+
+			}
+			#player {
+
+			}
+		}
+	</style>
+
+    <script src="../../dojo/dojo.js" data-dojo-config="async: true, parseOnLoad: true, mblAlwaysHideAddressBar: true"></script>
+	<script>
+		require([ "dx-alias/parser!" ], function(){});
+	</script>
+</head>
+<body>
+
+    <div id="player">
+		<div data-dojo-type="dx-media/html5/Slideshow" data-dojo-props="media:'./media/playlists/frmedia_sm.js', mediaRootPath:'./media/'"></div>
+	</div>
+
+</body>
+</html>

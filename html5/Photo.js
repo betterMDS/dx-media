@@ -36,6 +36,7 @@ define([
 			// this.onImageLoad.bind(this) breaks the ability to connect to that method
 			var cb = lang.bind(this, 'onImageLoad');
 
+			log('src:', this.src);
 			this.img = new Img({src:this.src, onload:cb, showing:0});
 			this.domNode.appendChild(this.img.domNode);
 			on(this.domNode, 'webkitTransitionEnd', this, 'onAniDone');

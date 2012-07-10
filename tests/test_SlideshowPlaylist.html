@@ -36,23 +36,13 @@
 
     <script src="../../dojo/dojo.js" data-dojo-config="async: true, parseOnLoad: true, mblAlwaysHideAddressBar: true"></script>
 	<script>
-		require([
-				"dojo",
-				"dojo/parser",
-				"dojo/domReady!",
-				"dx-alias/shim",
-				"dx-media/slideshow/Slideshow"
-
-			], function(dojo, parser, ready){
-				console.log('dojo', dojo);
-				parser.parse();
-			});
+		require([ "dx-alias/parser!" ], function(){});
 	</script>
 </head>
 <body>
 
     <div id="player">
-		<div data-dojo-type="dx-media.slideshow.Slideshow" data-dojo-props="media:'./media/playlists/frmedia.js'"></div>
+		<div data-dojo-type="dx-media/html5/Slideshow" data-dojo-props="media:'./media/playlists/frmedia_sm.js', mediaRootPath:'./media/'"></div>
 	</div>
 
 </body>

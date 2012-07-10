@@ -1,9 +1,0 @@
-bvVastCallback({
-	"ads":[
-		{
-			"src":"media/ads/468x60_xfiles.jpg"
-		},{
-			"src":"media/ads/468x60_ptc.jpg"
-		}
-	]
-});

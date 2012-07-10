@@ -4,7 +4,7 @@ var profile = (function(){
 
 	// the tag tests...
 	var test = function(filename, mid){
-			return /tests\//.test(mid);
+			return 0;///tests\//.test(mid);
 		},
 
 		copyOnly = function(filename, mid){
@@ -23,7 +23,7 @@ var profile = (function(){
 				"dx-media/README.md":1
 			};
 			//console.log('ignore:', mid, (mid in list) || /deploy/.test(mid))
-			return (mid in list) || /dx-dojo/.test(mid) || /deploy/.test(mid);
+			return (mid in list) || /dx-dojo/.test(mid) || /test/.test(mid) || /build/.test(mid);
 		},
 
 		amd = function(filename, mid){

@@ -27,8 +27,36 @@ var profile = (function(){
 
 
 		layers:{
-			"dojo/dojo":{
+			"dx-media/layer":{
 				include:[
+					"dx-media/controls/Controlbar",
+					"dx-media/controls/elements/Embed",
+					"dx-media/controls/elements/Facebook",
+					"dx-media/controls/elements/ScreenPlayButton",
+					"dx-media/controls/elements/Slideshow",
+					"dx-media/controls/elements/Twitter",
+					"dx-media/controls/elements/Video",
+					"dx-media/controls/elements/Vtour",
+					"dx-media/controls/elements/_Base",
+					"dx-media/controls/elements/_Button",
+
+					"dx-media/html5/Image",
+					"dx-media/html5/Photo",
+					"dx-media/html5/Preview",
+					"dx-media/html5/Slideshow",
+					"dx-media/html5/Vtour",
+					"dx-media/html5/VtourCanvas",
+
+					"dx-media/mobile/Video",
+					"dx-media/mobile/common",
+					"dx-media/mobile/sniff",
+					"dx-media/mobile/uacss",
+
+					"dx-media/player/Mobile",
+
+					"dx-media/plugins/VAST"
+				],
+				exclude:[
 					"dojo/Deferred",
 					"dojo/Evented",
 					"dojo/NodeList-dom",
@@ -65,20 +93,12 @@ var profile = (function(){
 					"dojo/dom-prop",
 					"dojo/dom-style",
 					"dojo/domReady",
-					"dojo/domReady!",
 					"dojo/errors/CancelError",
 					"dojo/errors/RequestError",
 					"dojo/errors/RequestTimeoutError",
 					"dojo/errors/create",
 					"dojo/fx/easing",
 					"dojo/has",
-					"dojo/has!0",
-					"dojo/has!dojo/_base/browser",
-					"dojo/has!dojo/_base/loader",
-					"dojo/has!dojo/_base/window",
-					"dojo/has!dojo/_base/xhr",
-					"dojo/has!dojo/domReady",
-					"dojo/has!dojo/promise/instrumenting",
 					"dojo/io-query",
 					"dojo/io/script",
 					"dojo/json",
@@ -97,7 +117,6 @@ var profile = (function(){
 					"dojo/request/watch",
 					"dojo/request/xhr",
 					"dojo/selector/_loader",
-					"dojo/selector/_loader!default",
 					"dojo/selector/acme",
 					"dojo/sniff",
 					"dojo/string",
@@ -116,37 +135,6 @@ var profile = (function(){
 					"dijit/registry"
 				]
 			}
-
-			,"dx-media/layer":{
-				include:[
-					"dx-media/controls/Controlbar",
-					"dx-media/controls/elements/Embed",
-					"dx-media/controls/elements/Facebook",
-					"dx-media/controls/elements/ScreenPlayButton",
-					"dx-media/controls/elements/Slideshow",
-					"dx-media/controls/elements/Twitter",
-					"dx-media/controls/elements/Video",
-					"dx-media/controls/elements/Vtour",
-					"dx-media/controls/elements/_Base",
-					"dx-media/controls/elements/_Button",
-
-					"dx-media/html5/Image",
-					"dx-media/html5/Photo",
-					"dx-media/html5/Preview",
-					"dx-media/html5/Slideshow",
-					"dx-media/html5/Vtour",
-					"dx-media/html5/VtourCanvas",
-
-					"dx-media/mobile/Video",
-					"dx-media/mobile/common",
-					"dx-media/mobile/sniff",
-					"dx-media/mobile/uacss",
-
-					"dx-media/player/Mobile",
-
-					"dx-media/plugins/VAST"
-				]
-			}
 			,"dx-alias/layer":{
 				include:[
 					"dx-alias/Widget",
@@ -160,6 +148,7 @@ var profile = (function(){
 					"dx-alias/shim",
 					"dx-alias/string",
 					"dx-alias/topic",
+					"dx-alias/parser",
 
 					"dx-timer/timer"
 				]

@@ -56,7 +56,7 @@ buildDir=$tempDir
 nano() {
 	echo "Creating nano deployment"
 	#./nano.sh "../"$tempDir "../"$releaseDir
-	node ../../node/nano.js ../dx-media/build/dx-media-nano.js "../"$tempDir "../"$releaseDir
+	node ../../node/nano.js ../dx-media/build/mobile-nano.js "../"$tempDir "../"$releaseDir
 }
 delete() {
 	echo "Deleting old directory"
@@ -89,7 +89,7 @@ case $1 in
 	shift
 	../../util/buildscripts/build.sh -p $name".profile.js" -releaseDir $buildDir --layerOptimize 0 --optimize 0 --cssOptimize comments.keepLines $@
 	nano
-	delete
+	#delete
 	;;
 
 -c)

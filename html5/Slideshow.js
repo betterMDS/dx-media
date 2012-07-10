@@ -15,7 +15,14 @@ define([
 	'dx-timer/timer',
 	"../mobile/common"
 ], function(declare, connect, has, _WidgetBase, _TemplatedMixin, _Container, io, Photo, on, dom, logger, mouse, string, timer, common){
-
+	//	summary:
+	//		A horizontal image slideshow that pans between images by
+	//		click-dragging in a browser or by a swipe gesture on a touch device,
+	//		similar to the iPhone Photos app.
+	//
+	//		TODO:
+	//			media and playlist stuff to be moved into a Playlist object.
+	//
 	var log = logger('SLD', 1);
 
 	var isMobile = has('ios') || has('android');
@@ -24,14 +31,25 @@ define([
 
 		templateString:'<div class="dxSlideshow"><div class="dxSlideshowContainer" data-dojo-attach-point="containerNode"></div></div>',
 		buttonClass:'',
+
+		// mediaRootPath:String
+		// 		An optional string to use in front of all images.
+		// 		It is rare you would need to use this. It's being used
+		// 		for when playlists change locations between development and
+		// 		the production.
+		//
+		mediaRootPath:'',
+
+		//	media: Array|String
+		//		Either an array of image paths, or a path to a jsonp file with
+		//		a more extensive array of objects.
 		media:'',
 
-		// minDragPercent:
-		// 	The distance the user must drag the image to qualify as far enough to
-		// 	move it the rest of the way. Anything less will be "canceled" and
-		// 	moved back to it's original position.
+		// minDragPercent: Float
+		// 		The distance the user must drag the image to qualify as far enough to
+		// 		move it the rest of the way. Anything less will be "canceled" and
+		// 		moved back to it's original position.
 		minDragPercent: isMobile ? .4 : .2,
-
 
 		postCreate: function(){
 
@@ -54,14 +72,20 @@ define([
 		},
 
 		onData: function(data){
-			//log('data', data);
+			log('data', data);
+
+			var root = this.mediaRootPath || '';
+			if(data.root) root += data.root;
 			this.index = 0;
 			this.images = [];
 			this.totalLoaded = 0;
 			var sz = dom.box(this.domNode);
 			data.image.forEach(function(img, i){
 				if(typeof img == 'string'){
-					img = {src:img}
+					img = {src:root + img}
+				}else{
+					if(img.src) img.src = root + img.src;
+					if(img.thumbnail) img.thumbnail = root + img.thumbnail;
 				}
 				img.index = i;
 				img.boxWidth = sz.w;
