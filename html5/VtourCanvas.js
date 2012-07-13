@@ -2,15 +2,14 @@ define([
 	'dojo/_base/declare',
 	'dojo/sniff',
 	'dojo/fx/easing',
-	'dijit/_WidgetBase',
-	'dijit/_TemplatedMixin',
+	'dx-alias/Widget',
 	'./Image',
 	'dx-alias/lang',
 	'dx-alias/dom',
 	'dx-alias/on',
 	'dx-alias/log',
 	'dx-timer/timer'
-], function(declare, has, fx, _WidgetBase, _TemplatedMixin, Dimage, lang, dom, on, logger, timer){
+], function(declare, has, fx, Widget, Img, lang, dom, on, logger, timer){
 
 	var log = logger('VTC', 0);
 	var tmp;
@@ -147,7 +146,7 @@ define([
 	}
 
 
-	return declare('dx-media.html5.VtourCanvas', [Base, _WidgetBase, _TemplatedMixin], {
+	return declare('dx-media.html5.VtourCanvas', [Base, Widget], {
 		templateString:'<div style="width:${width}px; height:${height}px"><canvas data-dojo-attach-point="canvas" width="${width}" height="${height}"></canvas></div>',
 
 		x:0,

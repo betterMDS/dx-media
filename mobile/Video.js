@@ -1,14 +1,13 @@
 define([
 	'dojo/_base/declare',
-	'dijit/_WidgetBase',
-	'dijit/_TemplatedMixin',
+	'dx-alias/Widget',
 	'dx-alias/dom',
 	'dx-alias/string',
 	'dx-alias/lang',
 	'dx-alias/on',
 	'dx-alias/has',
 	'dx-alias/log'
-],function(declare, _WidgetBase, _TemplatedMixin, dom, string, lang, on, has, logger){
+],function(declare, Widget, dom, string, lang, on, has, logger){
 	//
 	//	summary:
 	//		An HTML5 Video player designed to work specifically on mobile
@@ -77,7 +76,7 @@ define([
 			return a;
 		}
 
-	var Mobile = declare("dx-media.mobile.Video", [_WidgetBase, _TemplatedMixin], {
+	var Mobile = declare("dx-media.mobile.Video", [Widget], {
 
 		templateString:'<video class="${baseClass}" src="${src}" ${attributes}>',
 		baseClass:'dxMobileVideo',
@@ -107,7 +106,6 @@ define([
 		renderer:'html5',
 
 		constructor: function(/*Object*/options, node){
-			log('mobile')
 
 			// A properly formed video tag works fine out of the gate.
 			if(node){
@@ -126,22 +124,33 @@ define([
 		},
 
 		postCreate: function(){
-			if(!has('ios')){
-				log('NOT IOS')
+			// extending classes should not inherit this postCreate
+
+			// for mobile developing in desktop Safari:
+			if(has('fake-mobile')){
+				log('fake-mobile');
+				var playing = 0;
 				on(this.domNode, "click", this, function(){
-					log('CLICK')
-					this.domNode.play();
+					log('CLICK');
+					if(playing){
+						this.domNode.pause();
+					}else{
+						this.domNode.play();
+					}
 				});
-			}else{
-				log('is iOS')
 			}
 
-			on(this.domNode, "play", this, 'onPlay');
+			on(this.domNode, "play", this, function(){
+				playing = 1;
+				this.onPlay();
+			});
 			on(this.domNode, "pause", this, function(){
+				playing = 0;
 				this.onPause(this.domNode);
 				this.onStop(this.domNode);
 			});
 			on(this.domNode, "ended", this, function(){
+				playing = 0;
 				this.onComplete(this.domNode);
 				this.onStop(this.domNode);
 			});
@@ -201,6 +210,55 @@ define([
 		 *
 		 **********************************************************************/
 
+		centerVideo: function(){
+			var o = dom.box(this.domNode.parentNode);
+			var v = this.domNode;
+
+			var ah = o.w/this.videoWidth*this.videoHeight || o.h;
+			var aw = o.h/this.videoWidth*this.videoHeight || o.w;
+
+			if(this.videoAspect){ // else no video yet
+				if(o.h/o.w > this.videoAspect){
+					// go by height
+					//console.log("height ca:", o.h/o.w, "va:", this.videoAspect)
+					v.width = o.w;
+					v.height = o.w/this.videoWidth*this.videoHeight;
+					v.style.top = (o.h-this.domNode.height)/2+"px";
+					v.style.marginTop = "0";
+				}else{
+					// go by width or exact size
+					v.height = o.h;
+					v.width = o.h/this.videoHeight*this.videoWidth;
+					v.style.marginTop = 0;
+					v.style.top = 0;
+				}
+			}
+		},
+
+		resize: function(box){
+			if(!box) return; // block rogue dojo calls
+
+			this.isFullscreen = box.isFullscreen;
+			var s = this.isFullscreen ?
+			{
+				width:'100%',
+				height:'100%'
+			} :
+			{
+				width: box.w + 'px',
+				height: box.h + 'px'
+			};
+			dom.style(this.domNode, s);
+
+			this.centerVideo();
+
+			log('resize!');
+			this.onResize(box);
+		},
+
+
+
+
 		show: function(){
 			//	summary:
 			//		Shows the video component.
@@ -224,6 +282,8 @@ define([
 
 		play: function(){
 			// should be overridden by extending class
+			console.log('PLAY')
+			this.domNode.play();
 		},
 
 		pause: function(){

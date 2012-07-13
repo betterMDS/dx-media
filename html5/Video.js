@@ -250,48 +250,7 @@ define([
 			this.inherited(arguments);
 		},
 
-		centerVideo: function(){
-			var o = dom.box(this.domNode.parentNode);
-			var v = this.domNode;
-
-			var ah = o.w/this.videoWidth*this.videoHeight || o.h;
-			var aw = o.h/this.videoWidth*this.videoHeight || o.w;
-
-			if(this.videoAspect){ // else no video yet
-				if(o.h/o.w > this.videoAspect){
-					// go by height
-					//console.log("height ca:", o.h/o.w, "va:", this.videoAspect)
-					v.width = o.w;
-					v.height = o.w/this.videoWidth*this.videoHeight;
-					v.style.top = (o.h-this.domNode.height)/2+"px";
-					v.style.marginTop = "0";
-				}else{
-					// go by width or exact size
-					v.height = o.h;
-					v.width = o.h/this.videoHeight*this.videoWidth;
-					v.style.marginTop = 0;
-					v.style.top = 0;
-				}
-			}
-		},
-
-		resize: function(isFullscreen){
-			this.isFullscreen = isFullscreen;
-			var s = isFullscreen ?
-			{
-				width:'100%',
-				height:'100%'
-			} :
-			{
-				width:this.width + 'px',
-				height:this.height + 'px'
-			};
-			dom.style(this.domNode, s);
-
-			this.centerVideo();
-			
-			log('GO FULL!')
-		},
+		
 
 		play: function(){
 			log('play me');

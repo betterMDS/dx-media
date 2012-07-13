@@ -1,24 +1,21 @@
 define([
-	'dx-alias/shim',
 	'dojo/_base/declare',
-	'dojo/sniff',
-	'dijit/_WidgetBase',
-	'dijit/_TemplatedMixin',
+	'dx-alias/has',
+	'dx-alias/Widget',
 	'./VtourCanvas',
-	'dx-alias/string',
 	'dx-alias/dom',
 	'dx-alias/on',
 	'dx-alias/mouse',
 	'dx-alias/log'
 
-], function(shim, declare, has, _WidgetBase, _TemplatedMixin, VtourCanvas, string, dom, on, mouse, logger){
+], function(declare, has, Widget, VtourCanvas, dom, on, mouse, logger){
 
 	var log = logger('VT', 1);
 
 	var adjMouseX = 1;
 	var showing = 1;
 
-	return declare('dx-media.html5.Vtour', [_WidgetBase, _TemplatedMixin], {
+	return declare('dx-media.html5.Vtour', [Widget], {
 		templateString:'<div class="dxVtour"><div data-dojo-attach-point="listNode" class=""></div></div>',
 		width:0,
 		height:0,
@@ -42,19 +39,19 @@ define([
 			if(!this.width) this.width = getBox(this.domNode).w;
 			if(!this.height) this.height = getBox(this.domNode).h;
 
-//			dom.style(this.domNode, {width:this.width+'px', height:this.height+'px'});
 			dom.style(this.domNode, {width:'100%', height:'100%'});
 
 			this.showing && this.load(this.src);
 
-			var scroller = on(this.domNode, "scroll", this, "onScroll");
+			var scroller = this.on(this.domNode, "scroll", this, "onScroll");
 
 			mouse.track(this.domNode, this, 'onMouse');
 		},
 
-		onSize: function(size){
+		resize: function(box){
+			if(!box) return;
 			// actually should be all, not just this one
-			this.current.onSize(size);
+			this.current.onSize(box);
 		},
 
 		onMouse: function(evt){
@@ -133,14 +130,14 @@ define([
 		},
 
 		show: function(){
-			console.log('show')
+			log('show')
 			if(showing) return;
 			showing = 1;
 			dom.show(this.domNode);
 		},
 
 		hide: function(){
-			console.log('hide')
+			log('hide')
 			if(!showing) return;
 			showing = 0;
 			this.current.stop();

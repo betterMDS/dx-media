@@ -15,17 +15,7 @@
 		dojoConfig = {
 			async:1,
 			parseOnLoad: true,
-			mblAlwaysHideAddressBar: true,
-			packages:[{
-					name:"dx-media",
-					location:"../dx-media"
-				},{
-					name:'dx-alias',
-					location:'../dx-alias'
-				},{
-					name:'dx-timer',
-					location:'../dx-timer'
-				}]
+			mblAlwaysHideAddressBar: true
 		}
 	</script>
 	<script type="text/javascript" src="../../dojo/dojo.js"></script>
@@ -39,26 +29,29 @@
 </head>
 <body>
 	<div class="view">
-		<div data-dojo-type="dx-media/player/Mobile" data-dojo-props="defaultView:'Video'">
+		<div id="player">
+			<video id="video" data-dojo-type="dx-media/mobile/Video" data-dojo-props="width:640, height:360">
+				<source src='./media/video/DojoMaster.mp4'></source>
+				<source src='./media/video/SightAndSound.webm'></source>
+			</video>
+			<div id='preview' data-dojo-type="dx-media/html5/Preview" data-dojo-props="src:'media/images/SightAndSound.jpg'"></div>
+			<div id='screenButton' data-dojo-type="dx-media/controls/elements/ScreenPlayButton"></div>
 
-			<div data-dojo-type="dx-media/html5/Preview" data-dojo-props="src:'media/images/SightAndSound.jpg'"></div>
-			<div data-dojo-type="dx-media/controls/elements/ScreenPlayButton"></div>
+			<div id='vtour' data-dojo-type="dx-media/html5/Vtour" data-dojo-props="src:'media/images/VT_01.jpg'"></div>
+			<div id='slideshow' data-dojo-type="dx-media/html5/Slideshow" data-dojo-props="media:'./media/playlists/frmedia_sm.js'"></div>
 
-			<div data-dojo-type="dx-media/mobile/Video" data-dojo-props="poster:'media/images/SightAndSound_vid.jpg', src:'media/video/SightAndSound_sm.mp4'"></div>
-			<div data-dojo-type="dx-media/html5/Vtour" data-dojo-props="src:'media/images/VT_01.jpg'"></div>
-			<div data-dojo-type="dx-media/html5/Slideshow" data-dojo-props="media:'./media/playlists/frmedia_sm.js'"></div>
-
-			<div data-dojo-type="dx-media/plugins/VAST" data-dojo-props="media:'./media/ads/vast.js'"></div>
-			<div data-dojo-type="dx-media/controls/Controlbar" >
-
+			<!--<div data-dojo-type="dx-media/plugins/VAST" data-dojo-props="media:'./media/ads/vast.js'"></div>
+			-->
+			<div id='controls' data-dojo-type="dx-media/controls/Controlbar" >
 				<div data-dojo-type="dx-media/controls/elements/Video" ></div>
 				<div data-dojo-type="dx-media/controls/elements/Slideshow" ></div>
 				<div data-dojo-type="dx-media/controls/elements/Vtour" ></div>
-
 				<!--<div data-dojo-type="dx-media/controls/elements/Embed" ></div>-->
 				<div data-dojo-type="dx-media/controls/elements/Facebook" ></div>
 				<div data-dojo-type="dx-media/controls/elements/Twitter" ></div>
-
+			</div>
+			<div data-dojo-type="dx-media/controls/Controller"
+				 data-dojo-props="controls:'controls',video:'video',preview:'preview',screenButton:'screenButton', vtour:'vtour', slideshow:'slideshow'">
 			</div>
 		</div>
 	</div>

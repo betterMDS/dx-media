@@ -23,7 +23,7 @@ define([
 	//		TODO:
 	//			media and playlist stuff to be moved into a Playlist object.
 	//
-	var log = logger('SLD', 1);
+	var log = logger('SLD', 0);
 
 	var isMobile = has('ios') || has('android');
 
@@ -96,7 +96,7 @@ define([
 				on(w, 'onImageLoad', this, 'onImageLoad' );
 			}, this);
 			//log('this.images', this.images);
-			this.onResize();
+			this._resize();
 		},
 
 		onImageLoad: function(){
@@ -110,10 +110,10 @@ define([
 			if(!this.getParent()){
 				// if has parent, let it do the detecting
 				if(isMobile){
-					on(common, 'updateOrient', this, 'onResize');
+					on(common, 'updateOrient', this, '_resize');
 				}else{
-					connect.subscribe('/dojox/mobile/screenSize/tablet', this, 'onResize');
-					on(window, 'resize', this, 'onResize');
+					connect.subscribe('/dojox/mobile/screenSize/tablet', this, '_resize');
+					on(window, 'resize', this, '_resize');
 				}
 			}
 			this.setCurrentImages();
@@ -199,23 +199,24 @@ define([
 		},
 
 
-		onResize: function(){
-			this.onSize(dom.box(this.domNode));
+		_resize: function(){
+			this.resize(dom.box(this.domNode));
 
 		},
 
-		onSize: function(sz){
+		resize: function(box){
+			if(!box) return;
 			if(!this.images){
 				timer(this, function(){
-					this.onSize(sz);
+					this.resize(box);
 				}, 100);
 				return;
 			}
-			this.width = sz.w;
-			this.height = sz.h;
+			this.width = box.w;
+			this.height = box.h;
 			this.images.forEach(function(w){
 				//w.show();
-				w.onSize(sz);
+				w.onSize(box);
 			});
 			this.currentImages && this.setCurrentImages();
 		},

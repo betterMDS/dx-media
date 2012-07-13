@@ -1,11 +1,13 @@
 define([
 	'dojo/_base/declare',
+	'../mobile/common',
+	'dx-alias/has',
 	'dx-alias/Widget',
 	'dx-alias/dom',
 	'dx-alias/on',
 	'dx-alias/lang',
 	'dx-alias/log'
-],function(declare, Widget, dom, on, lang, logger){
+],function(declare, mobile, has, Widget, dom, on, lang, logger){
 	//	summary:
 	//		The controller that wires a set of controls (controls/Controlbar)
 	//		to a video renderer.
@@ -14,7 +16,9 @@ define([
 	//		Handle Slideshow and Vtour
 	//
 	//
-	var log = logger('VC', 0);
+	var log = logger('VC', 1);
+
+	var isMobile = has('mobile');
 
 	return declare('dx-media.controls.Controller', [Widget], {
 
@@ -23,13 +27,16 @@ define([
 		preview:null,
 		screenButton:null,
 
+		slideshow:null,
+		vtour:null,
+
 		isFullscreen:false,
 
 		postCreate: function(){
 
 			this.displayElements = [];
 
-			['controls', 'video', 'preview', 'screenButton'].forEach(function(str){
+			['controls', 'video', 'preview', 'screenButton', 'slideshow', 'vtour'].forEach(function(str){
 				this[str] = this.getObject(str);
 				this.displayElements.push(this[str]);
 			}, this);
@@ -38,13 +45,32 @@ define([
 
 			this._connections = [];
 
-			log(this.controls);
-			log(this);
+			log('controls:', this.controls);
+			log('controller', this);
 
 			this.buttons = this.controls.getElements();
 			this.map = {};
 			this.buttons.forEach(function(w){ this.map[w.name] = w}, this);
 			this.init();
+
+			if(isMobile){
+				this.on(mobile, 'updateOrient', this, 'resize');
+			}else{
+				this.sub('/dojox/mobile/screenSize/tablet', this, 'resize');
+				this.on(window, 'resize', this, 'resize');
+			}
+
+			this.resize();
+		},
+
+		resize: function(){
+			var box = dom.box(this.parentNode);
+			//log('this.parentNode:', box.w, box.h, this.parentNode)
+			box.isFullscreen = this.isFullscreen;
+			this.displayElements.forEach(function(el){
+				el.resize && el.resize(box);
+			}, this);
+			mobile.hideAddressBar();
 		},
 
 		init: function(){
@@ -56,9 +82,9 @@ define([
 			if(this.inited) return;
 			this.inited = 1;
 
-			this.parentNode = this.controls.domNode.parentNode;
+			this.parentNode = isMobile ? window : this.controls.domNode.parentNode;
 
-			//log('map', this.map);
+			console.log('map', this.map);
 
 			if(this.map.Play){
 				this.on(this.map.Play, 'onPlay', this.video, 'play');
@@ -132,6 +158,7 @@ define([
 			}
 
 			if(this.screenButton){
+				console.log('SCREENBUTTON')
 				this.on(this.screenButton, 'onClick', this.video, 'play');
 				this.on(this.video, 'onPlay', this.screenButton, 'hide');
 			}
@@ -140,7 +167,46 @@ define([
 				this.on(this.video, 'onPlay', this.preview, 'hide');
 			}
 
+
+			// These are buttons, not components
+			if(this.map.Video){
+				this.on(this.map.Video, 'onClick', this, 'showVideo');
+			}
+			if(this.map.Slideshow){
+
+				this.on(this.map.Slideshow, 'onClick', this, 'showSlideshow');
+			}
+			if(this.map.Vtour){
+
+				this.on(this.map.Vtour, 'onClick', this, 'showVtour');
+			}
+
 			log('mapped');
+		},
+
+		hideComponents: function(){
+			if(this.video) this.video.hide();
+			if(this.slideshow) this.slideshow.hide();
+			if(this.vtour) this.vtour.hide();
+			if(this.preview) this.preview.hide();
+			if(this.screenButton) this.screenButton.hide();
+		},
+
+		showVideo: function(){
+			this.hideComponents();
+			this.video.show();
+			if(this.preview) this.preview.show();
+			if(this.screenButton) this.screenButton.show();
+		},
+		showVtour: function(){
+			log('Vtour click')
+			this.hideComponents();
+			this.vtour.show();
+		},
+		showSlideshow: function(){
+			log('Slideshow click')
+			this.hideComponents();
+			this.slideshow.show();
 		},
 
 		onFullscreen: function(evt){
@@ -148,12 +214,7 @@ define([
 
 			this.isFullscreen = !this.isFullscreen;
 			log('onFullscreen', evt);
-			var box = dom.box(this.parentNode);
-			box.isFullscreen = this.isFullscreen;
-
-			this.displayElements.forEach(function(el){
-				el.resize && el.resize(box);
-			}, this);
+			this.resize();
 		},
 
 		getScreenSize: function(){

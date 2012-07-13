@@ -38,7 +38,7 @@ define([
 
 			if(!this.imageAspect){
 				timer(this, function(){
-					this.onSize(size);
+					this.resize(size);
 				}, 100);
 				return;
 			}

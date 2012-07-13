@@ -70,7 +70,7 @@ define([
 		loadSwf:require.toUrl('dx-media') + '/resources/video.swf',
 
 		constructor: function(options){
-//z = p;
+
 			// mobile/Video is used to find the src from markup
 			this.inherited(arguments);
 

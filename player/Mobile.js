@@ -6,17 +6,16 @@ define([
 	"dx-alias/has",
 	"dx-alias/dom",
 	"dx-alias/lang",
-	"dx-alias/on",
-	"dx-alias/topic",
 	"dx-alias/log",
 	"dx-timer/timer"
-], function(declare, mobile, _Container, Widget, has, dom, lang, on, topic, logger, timer){
+], function(declare, mobile, _Container, Widget, has, dom, lang, logger, timer){
 	//	summary:
 	//		A top-level class that is a mobile-only player.
 	//
 	var log = logger('MOB', 1);
 	var screensize;
-	var isMobile = has('ios') || has('android');
+	console.log('TEST MOBILE')
+	var isMobile = has('mobile');
 
 	return declare('dx-media.player.Mobile', [Widget, _Container], {
 
@@ -28,10 +27,10 @@ define([
 
 		constructor: function(){
 			if(isMobile){
-				on(mobile, 'updateOrient', this, 'onResize');
+				this.on(mobile, 'updateOrient', this, 'onResize');
 			}else{
-				on.sub('/dojox/mobile/screenSize/tablet', this, 'onResize');
-				on(window, 'resize', this, 'onResize');
+				this.sub('/dojox/mobile/screenSize/tablet', this, 'onResize');
+				this.on(window, 'resize', this, 'onResize');
 			}
 		},
 
@@ -51,7 +50,7 @@ define([
 					case 'Controlbar':
 
 						this.controls = w;
-						on(this.controls, 'onClick', this, 'onClick');
+						this.on(this.controls, 'onClick', this, 'onClick');
 						break;
 
 					case 'ScreenPlayButton':
@@ -60,8 +59,10 @@ define([
 
 					case 'Video':
 						this.views['Video'] = this.video = w;
-						on(this.video, 'onStop', this, 'onStop');
-						on(this.video, 'onPlay', this, 'onStop');
+						this.on(this.video, {
+							'onStop':'onStop',
+							'onPlay':'onStop'
+						}, this);
 						this.setCurrent(w);
 						break;
 
@@ -85,7 +86,7 @@ define([
 				if(this.preview.width){
 					this.video.onPreview(this.preview.width, this.preview.height);
 				}else{
-					on(this.preview, 'onReady', this, function(){
+					this.on(this.preview, 'onReady', this, function(){
 						this.video.onPreview(this.preview.width, this.preview.height);
 					});
 				}
@@ -117,7 +118,7 @@ define([
 				this.screenBtn && dom.show(this.screenBtn.domNode);
 			}
 
-			topic.pub('/dx/button/on/select', widget);
+			//topic.pub('/dx/button/on/select', widget);
 		},
 
 		onClick: function(w){
