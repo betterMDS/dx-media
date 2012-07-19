@@ -88,11 +88,7 @@ define([
 			if(this.inited) return;
 			this.inited = 1;
 
-			if(!this.width){
-				var box = dom.box(this.domNode);
-				this.width = box.w;
-				this.height = box.h;
-			}
+			
 			this.canvas = new sl.Canvas({
 				width:this.width,
 				height:this.height,
@@ -306,7 +302,7 @@ define([
 		},
 
 		centerVideo: function(){
-
+			log('centerVideo, isFullscreen:', this.isFullscreen)
 			var mw = this.naturalVideoWidth;
 			var mh = this.naturalVideoHeight;
 			var cw = this.isFullscreen ? window.screen.width  : this.width;
@@ -489,9 +485,12 @@ define([
 		},
 
 		resize: function(size){
+			if(!size) return;
+			if(!isReady(this, 'videoReady')) return;
+
 			log('resize');
 
-			this.isFullscreen = !this.isFullscreen;
+			this.isFullscreen = size.isFullscreen;
 			this.width = size.w;
 			this.height = size.h;
 			this.canvas.size(this.width, this.height);
@@ -499,7 +498,7 @@ define([
 			this.back.size({width:this.width, height:this.height});
 
 			this.centerVideo();
-			this.nativeControls.onFullscreen(this.isFullscreen, this.controls);
+			this.nativeControls && this.nativeControls.onFullscreen(this.isFullscreen, this.controls);
 		},
 
 		showControls: function(){

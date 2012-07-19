@@ -24,28 +24,17 @@
     <script src="../../dojo/dojo.js"></script>
 	<script>
 		require([
-				"dojo",
-				"dojo/parser",
-				"dojo/domReady!",
+				"dx-alias/parser!",
 				"dx-media/flash/version",
 				"dx-media/flash/Swf"
-			], function(dojo, parser, ready, version){
-			console.log('dojo', dojo);
-
-			console.log('Flash version:', version.toString())
-            parser.parse();
-
-
+			], function(parser, version){
 
 		});
 	</script>
 </head>
 <body>
-
     <div id="player">
 		<div data-dojo-type="dx-media/flash/Swf" data-dojo-props="src:'./media/flash/LogoAnimation.swf', loader:true, width:320, height:240"></div>
 	</div>
-
-
 </body>
 </html>

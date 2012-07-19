@@ -11,7 +11,6 @@
 	<link href="../resources/dxVtour.css" rel="stylesheet" />
 	<link href="../resources/dxPlayerMobile.css" rel="stylesheet" />
 	<link href="../resources/dxControlbar.css" rel="stylesheet" />
-	<link href="../resources/dxVast.css" rel="stylesheet" />
 	<script>
 		dojoConfig = {
 			async:1,
@@ -41,12 +40,12 @@
 			<div id='vtour' data-dojo-type="dx-media/html5/Vtour" data-dojo-props="src:'media/images/VT_01.jpg'"></div>
 			<div id='slideshow' data-dojo-type="dx-media/html5/Slideshow" data-dojo-props="media:'./media/playlists/frmedia_sm.js'"></div>
 
-			<!--<div data-dojo-type="dx-media/plugins/VAST" data-dojo-props="media:'./media/ads/vast.js'"></div>
-			-->
+			<div data-dojo-type="dx-media/plugins/VAST" data-dojo-props="media:'./media/ads/vast.js'"></div>
 			<div id='controls' data-dojo-type="dx-media/controls/Controlbar" >
 				<div data-dojo-type="dx-media/controls/elements/Video" ></div>
 				<div data-dojo-type="dx-media/controls/elements/Slideshow" ></div>
 				<div data-dojo-type="dx-media/controls/elements/Vtour" ></div>
+				<!--<div data-dojo-type="dx-media/controls/elements/Embed" ></div>-->
 				<div data-dojo-type="dx-media/controls/elements/Facebook" ></div>
 				<div data-dojo-type="dx-media/controls/elements/Twitter" ></div>
 			</div>

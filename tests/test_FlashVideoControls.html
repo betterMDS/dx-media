@@ -1,9 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="en">
 <head>
-    <title>Test dx-media Flash Video</title>
+    <title>Test dx-media Flash Video Controls</title>
 	<script src='../../dx-alias/html5.js'></script>
-	
+
 	<link href="../resources/dxHtml5Video.css" rel="stylesheet" />
 	<link href="../resources/dxControlbar.css" rel="stylesheet" />
 
@@ -26,61 +26,21 @@
     <script>
         dojoConfig = {
 			async:1,
-			isDebug:true
+			isDebug:0
 		};
     </script>
     <script src="../../dojo/dojo.js"></script>
 	<script>
 
 		require([
-				"dx-alias/shim",
-
-				"dojo/Deferred",
-				'dx-alias/parser!',
-				//"dojo/parser",
-				"dojo/domReady!",
-				"dx-media/controls/Controller",
-
-				"dx-media/Html5/Video",
-				"dx-media/Html5/Preview",
-				"dx-media/controls/Controlbar",
-				"dx-media/controls/elements/all"
-			], function(shim, Deferred, parser, ready, Controller){
-console.log('navigator.userAgent', navigator.userAgent)
-			//parser.parse().then(function(){
-
-				// Flash Video slows down the parser, so you have to
-				// put the code inside the parse().then()
-
-				//doFoo();
-
-				var doBar = function(){}
-
-				var d = new Deferred();
-				d.then(function(){
-					doBar();
-				}).then(function(){
-					//doFoo();
-
-					new Controller({
-						video:'video',
-						controls:'controls',
-						preview:'preview',
-						screenButton:'screenButton'
-					});
-				});
-				d.resolve();
-
-
-
-			//}, function(e){ console.error('parse error', e) });
-
+				"dx-alias/parser!"
+			], function(){
 
 		});
 	</script>
 </head>
 <body>
-	<h1>Test dx-media Flash Video</h1>
+	<h1>Test dx-media Flash Video Controls</h1>
     <div id="player">
 		<video id="video" data-dojo-type="dx-media/flash/Video" data-dojo-props="width:640, height:360">
 			<source src='../tests/media/video/SightAndSound_sm.mp4'></source>
@@ -99,6 +59,7 @@ console.log('navigator.userAgent', navigator.userAgent)
 			<div data-dojo-type="dx-media/controls/elements/Facebook"></div>
 			<div data-dojo-type="dx-media/controls/elements/Twitter"></div>
 		</div>
+		<div data-dojo-type="dx-media/controls/Controller" data-dojo-props="controls:'controls',video:'video',preview:'preview',screenButton:'screenButton'"></div>
 	</div>
 </body>
 </html>

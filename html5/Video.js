@@ -32,8 +32,15 @@ define([
 
 		renderer:'html5',
 
+		constructor: function(options, node){
+			log('HTML5 VIDEO CONSTR');
+			//this.prepareVideoAttributes(options, node);
+		},
+
 		postMixInProperties: function(){
 
+			this.inherited(arguments);
+			
 			if(typeof this.attributes == 'string') this.attributes = [];
 			var options = {
 				width:this.width,
@@ -48,7 +55,6 @@ define([
 			for(var nm in options){
 				this.attributes.push(nm+'="'+options[nm]+'"');
 			}
-			this.inherited(arguments);
 		},
 
 		postCreate: function(){
@@ -155,8 +161,8 @@ define([
 			if(evt.total){
 				p = (evt.loaded / evt.total);
 			}else{
-				if(!v.readyState){ // Firefox sometimes needs to wait
-					timer(this, "_load", 100);
+				if(!v.readyState){ // Firefox & Chrome sometime needs to wait
+					timer(this, "_onDownload", 100);
 					return;
 				}
 				p = ((v.buffered.end(0) / v.duration));
@@ -246,11 +252,11 @@ define([
 
 		onError: function(evt){
 			// code 4 == no source. what else?
-			console.error("Video Error:", evt.target.error.code, evt.target.src); //evt.target.error.code,
+			console.error("Video Error:", evt.target.error.code, evt.target.src, this.src); //evt.target.error.code,
 			this.inherited(arguments);
 		},
 
-		
+
 
 		play: function(){
 			log('play me');

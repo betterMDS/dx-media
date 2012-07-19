@@ -5,61 +5,72 @@
 	<link href="../resources/dxHtml5Video.css" rel="stylesheet" />
 	<style>
 		html, body{
-			width:640px;
 			margin:10;
 			padding:0;
 			background:#ccc;
 			font-family: sans-serif;
 		}
-		#player{
-			width:640px;
-			height:360px;
-			position:relative;
+		.row{
+			position: relative;
+		}
+		.pWrap, .pWrap2{
+			width:320px;
+			position:absolute;
+			top:0;
+			left:0;
+		}
+		.pWrap2{
+			left:340px;
+		}
+		label{
+			display: block;
+			text-align: center;
+		}
+		#player, #player2{
+			width:320px;
+			height:180px;
 		}
 
 	</style>
     <script>
         dojoConfig = {
 			async:1,
-			isDebug:true
+			isDebug:0
 		};
     </script>
     <script src="../../dojo/dojo.js"></script>
 	<script>
 		require([
-				"dojo",
-				"dojo/parser",
-				"dojo/domReady!",
-				"dijit/registry",
-				"dx-alias/on",
+				"dx-alias/parser!",
+				"dx-alias/dom",
 				"dx-media/Html5/Video"
-			], function(dojo, parser, ready, registry, on){
+			], function(parser, dom, Video){
 
-			parser.parse();
-
-			var vid = registry.byId('video');
-
-			console.log('video:', vid);
-
-			on(vid, 'onPlay', function(){
-				console.log('play!');
-			});
-			on(vid, 'onPause', function(){
-				console.log('pause!');
-			});
-			on(vid, 'onComplete', function(){
-				console.log('complete!');
-			});
+			new Video({
+				width:640, height:360, controls:true, autoplay:true,
+				src:'./media/video/SightAndSound.webm'
+			}, 'player2');
 		});
 	</script>
 </head>
 <body>
 	<h1>Test dx-media HTML5 Video</h1>
-    <div id="player">
-		<video id="video" data-dojo-type="dx-media/Html5/Video" data-dojo-props="width:640, height:360, controls:true, autoplay:true">
-			<source src='./media/video/SightAndSound_sm.mp4'></source>
-			<source src='./media/video/SightAndSound.webm'></source>
-		</video>
+	<div class='row'>
+		<div class='pWrap'>
+			<label>Markup Player</label>
+			<div id="player">
+				<video id="video" data-dojo-type="dx-media/Html5/Video" data-dojo-props="width:320, height:180, controls:true, autoplay:true">
+					<source src='./media/video/SightAndSound_sm.mp4'></source>
+					<source src='./media/video/SightAndSound.webm'></source>
+				</video>
+			</div>
+		</div>
+		<div class='pWrap2'>
+			<label>Programmatic Player</label>
+			<div id='player2'>
+
+			</div>
+		</div>
 	</div>
 </body>
 </html>

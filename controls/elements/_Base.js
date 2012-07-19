@@ -6,9 +6,9 @@ define([
 
 	return declare('dx-media.controls.elements._Base', [_WidgetBase, _TemplatedMixin], {
 
-		postCreate: function(){
+		startup: function(){
 			var p = this.getParent();
-			//console.log('parent:', this.declaredClass, p);
+			//console.log('parent:', p, this.declaredClass, this.domNode, this.domNode.parentNode);
 			if(p){
 				if(this.align == 'right'){
 					p.addChildRight(this);

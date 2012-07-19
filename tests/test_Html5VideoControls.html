@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="en">
 <head>
-    <title>Test dx-media HTML5 Video</title>
+    <title>Test dx-media HTML5 Video Controls</title>
 	<link href="../resources/dxHtml5Video.css" rel="stylesheet" />
 	<link href="../resources/dxControlbar.css" rel="stylesheet" />
 	<style>
@@ -12,10 +12,26 @@
 			background:#ccc;
 			font-family: sans-serif;
 		}
-		#player{
-			width:640px;
-			height:360px;
-			position:relative;
+		.row{
+			position: relative;
+		}
+		.pWrap, .pWrap2{
+			width:320px;
+			position:absolute;
+			top:0;
+			left:0;
+		}
+		.pWrap2{
+			left:340px;
+		}
+		label{
+			display: block;
+			text-align: center;
+		}
+		#player, #player2{
+			width:320px;
+			height:180px;
+			position: relative;
 		}
 
 	</style>
@@ -28,33 +44,50 @@
     <script src="../../dojo/dojo.js"></script>
 	<script>
 		require([
-				"dx-alias/parser!"
-			], function(){
+				"dx-alias/parser!",
+				"dx-alias/dom",
+				"dx-media/Html5/Video"
+			], function(parser, dom, Video){
 
-			});
+			//new Video({
+			//	width:640, height:360, controls:true, autoplay:true,
+			//	src:'./media/video/SightAndSound.webm'
+			//}, 'player2');
+		});
 	</script>
 </head>
 <body>
-	<h1>Test dx-media HTML5 Video</h1>
-    <div id="player">
-		<video id="video" data-dojo-type="dx-media/Html5/Video" data-dojo-props="width:640, height:360">
-			<source src='./media/video/DojoMaster.mp4'></source>
-			<source src='./media/video/SightAndSound.webm'></source>
-		</video>
-		<div id='preview' data-dojo-type="dx-media/Html5/Preview" data-dojo-props="src:'media/images/SightAndSound.jpg'"></div>
-		<div id='screenButton' data-dojo-type="dx-media/controls/elements/ScreenPlayButton"></div>
-		<div id="controls" data-dojo-type="dx-media/controls/Controlbar" data-dojo-props="width:640, height:360">
-			<div data-dojo-type="dx-media/controls/elements/Play"></div>
-			<div data-dojo-type="dx-media/controls/elements/Fullscreen"></div>
-			<div data-dojo-type="dx-media/controls/elements/Volume"></div>
-			<div data-dojo-type="dx-media/controls/elements/Time"></div>
-			<div data-dojo-type="dx-media/controls/elements/Progress" data-dojo-props='width:100'></div>
-			<div data-dojo-type="dx-media/controls/elements/Duration"></div>
-			<div data-dojo-type="dx-media/controls/elements/Embed"></div>
-			<div data-dojo-type="dx-media/controls/elements/Facebook"></div>
-			<div data-dojo-type="dx-media/controls/elements/Twitter"></div>
+	<h1>Test dx-media HTML5 Video Controls</h1>
+	<div class='row'>
+		<div class='pWrap'>
+			<label>Markup Player</label>
+			<div id="player">
+				<video id="video" data-dojo-type="dx-media/Html5/Video" data-dojo-props="width:320, height:180">
+					<source src='./media/video/DojoMaster.mp4'></source>
+					<source src='./media/video/SightAndSound.webm'></source>
+				</video>
+				<div id='preview' data-dojo-type="dx-media/Html5/Preview" data-dojo-props="src:'media/images/SightAndSound.jpg'"></div>
+				<div id='screenButton' data-dojo-type="dx-media/controls/elements/ScreenPlayButton"></div>
+				<div id="controls" data-dojo-type="dx-media/controls/Controlbar" data-dojo-props="width:640, height:360">
+					<div data-dojo-type="dx-media/controls/elements/Play"></div>
+					<div data-dojo-type="dx-media/controls/elements/Fullscreen"></div>
+					<div data-dojo-type="dx-media/controls/elements/Volume"></div>
+					<div data-dojo-type="dx-media/controls/elements/Time"></div>
+					<div data-dojo-type="dx-media/controls/elements/Progress" data-dojo-props='width:50'></div>
+					<div data-dojo-type="dx-media/controls/elements/Duration"></div>
+					<div data-dojo-type="dx-media/controls/elements/Embed"></div>
+					<div data-dojo-type="dx-media/controls/elements/Facebook"></div>
+					<div data-dojo-type="dx-media/controls/elements/Twitter"></div>
+				</div>
+				<div data-dojo-type="dx-media/controls/Controller" data-dojo-props="controls:'controls',video:'video',preview:'preview',screenButton:'screenButton'"></div>
+			</div>
 		</div>
-		<div data-dojo-type="dx-media/controls/Controller" data-dojo-props="controls:'controls',video:'video',preview:'preview',screenButton:'screenButton'"></div>
+		<!--<div class='pWrap2'>
+			<label>Programmatic Player</label>
+			<div id='player2'>
+
+			</div>
+		</div>-->
 	</div>
 </body>
 </html>

@@ -12,9 +12,9 @@ define([
 	//	summary:
 	//		Media player container widget for controls (play button, etc).
 	//
-	var log = logger('CON', 0);
+	var log = logger('CON', 1);
 
-	return declare('dx-media.controls.Controlbar', [Widget, _Container], {
+	return declare('dx-media.controls.Controlbar', [Widget], {
 
 		templateStyle:'dxStyleIcon',
 		baseClass:'dxControlbar',
@@ -30,7 +30,11 @@ define([
 		gap:5,
 
 		postCreate: function(){
+			log('postCreate')
+		},
 
+		startup: function(){
+			log('startup');
 		},
 
 		onClick: function(/*Dijit*/widget){
@@ -47,6 +51,7 @@ define([
 			this.register(w);
 			this._lftMargin += dom.box(w.domNode).w + this.gap;
 			this.setFlex();
+			//log('addChildLeft')
 		},
 
 		addChildRight: function(w){
@@ -70,6 +75,7 @@ define([
 
 		register: function(w){
 			w.name = lang.last(w.declaredClass.split('.'));
+			log('register', w.name);
 			var widget = w; // scoped
 			this.elements.push(w);
 			on(w, 'onClick', this, function(){

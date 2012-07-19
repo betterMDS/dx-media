@@ -26,6 +26,7 @@ define([
 
 		pub = function(method, ref, args){
 			timer(function(){
+				console.log(ref, fVideos[ref]);
 				fVideos[ref]['_'+method](args);
 			}, 1)
 		}
@@ -69,29 +70,30 @@ define([
 		renderer:'flash',
 		loadSwf:require.toUrl('dx-media') + '/resources/video.swf',
 
-		constructor: function(options){
-
-			// mobile/Video is used to find the src from markup
-			this.inherited(arguments);
-
+		constructor: function(options, node){
+			log('FLASH VIDEO CONSTR');
+			//this.prepareVideoAttributes(options, node);
 			log('src:', this.src);
 			log('swf:', require.toUrl('dx-media'));
+			this.queue = [];
+			this.videoRef = 'flashVideo' + (flashVideoCount++);
+			register(this);
+		},
 
-			var flashVars = {
+		postMixInProperties: function(){
+			log('FLASH VIDEO postMixInProperties');
+			this.prepare({
+				controls:this.controls,
 				loadUrl:this.loadSwf,
+				width:this.width,
+				height:this.height,
 				path: this.src,
 				loader: true,
-				videoRef: this.videoRef = 'flashVideo' + (flashVideoCount++),
-				autoplay: options.autoplay || this.autoplay,
+				videoRef: this.videoRef,
+				autoplay: this.autoplay,
 				standalone:this.controls,
 				isDebug:true
-			}
-
-			this.queue = [];
-
-			register(this);
-
-			this.prepare(flashVars);
+			});
 		},
 
 		_timerTries:5,

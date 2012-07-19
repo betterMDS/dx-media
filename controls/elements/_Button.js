@@ -38,13 +38,16 @@ define([
 		},
 
 
-
 		postCreate: function(){
-			var p = this.getParent();
-			this.templateStyle = p.templateStyle;
 			if(this.radioGroup){
 				addRadio(this);
 			}
+			this.inherited(arguments);
+		},
+
+		startup: function(){
+			var p = this.getParent();
+			if(p) this.templateStyle = p.templateStyle;
 			this.inherited(arguments);
 		},
 

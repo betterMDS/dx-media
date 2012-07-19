@@ -6,8 +6,9 @@ define([
 	'dx-alias/dom',
 	'dx-alias/on',
 	'dx-alias/lang',
-	'dx-alias/log'
-],function(declare, mobile, has, Widget, dom, on, lang, logger){
+	'dx-alias/log',
+	'dx-timer/timer'
+],function(declare, mobile, has, Widget, dom, on, lang, logger, timer){
 	//	summary:
 	//		The controller that wires a set of controls (controls/Controlbar)
 	//		to a video renderer.
@@ -38,19 +39,28 @@ define([
 
 			['controls', 'video', 'preview', 'screenButton', 'slideshow', 'vtour'].forEach(function(str){
 				this[str] = this.getObject(str);
-				this.displayElements.push(this[str]);
+				//log('   get', str, 'got', this[str])
+				if(this[str]) this.displayElements.push(this[str]);
 			}, this);
 
 			this.id = lang.uid('VideoControl');
+			timer(this, 'startup', 30);
+		},
 
+		startup: function(){
+			if(this._started) return; this._started = 1;
 			this._connections = [];
 
 			log('controls:', this.controls);
 			log('controller', this);
 
-			this.buttons = this.controls.getElements();
 			this.map = {};
-			this.buttons.forEach(function(w){ this.map[w.name] = w}, this);
+			this.buttons = [];
+			if(this.controls){
+				this.buttons = this.controls.getElements();
+				this.buttons.forEach(function(w){ this.map[w.name] = w}, this);
+			}
+
 			this.init();
 
 			if(isMobile){
@@ -63,15 +73,7 @@ define([
 			this.resize();
 		},
 
-		resize: function(){
-			var box = dom.box(this.parentNode);
-			//log('this.parentNode:', box.w, box.h, this.parentNode)
-			box.isFullscreen = this.isFullscreen;
-			this.displayElements.forEach(function(el){
-				el.resize && el.resize(box);
-			}, this);
-			mobile.hideAddressBar();
-		},
+
 
 		init: function(){
 
@@ -158,7 +160,6 @@ define([
 			}
 
 			if(this.screenButton){
-				console.log('SCREENBUTTON')
 				this.on(this.screenButton, 'onClick', this.video, 'play');
 				this.on(this.video, 'onPlay', this.screenButton, 'hide');
 			}
@@ -215,6 +216,16 @@ define([
 			this.isFullscreen = !this.isFullscreen;
 			log('onFullscreen', evt);
 			this.resize();
+		},
+
+		resize: function(){
+			var box = dom.box(this.parentNode);
+			//log('this.displayElements:', this.displayElements)
+			box.isFullscreen = this.isFullscreen;
+			this.displayElements.forEach(function(el){
+				el.resize && el.resize(box);
+			}, this);
+			mobile.hideAddressBar();
 		},
 
 		getScreenSize: function(){

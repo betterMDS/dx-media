@@ -12,7 +12,7 @@ define([
 ], function(has, version, declare, query, Widget, lang, dom, on, timer, logger){
 
 	var
-		log = logger('SWF', 0),
+		log = logger('SWF', 1),
 
 		isIE = has('ie'),
 		swfs = {},
@@ -56,7 +56,13 @@ define([
 		loader:false,
 
 		constructor: function(options){
-			this.prepare(options);
+			log('SWF CONSTR');
+			this.flashVars = options;
+		},
+
+		postMixInProperties: function(){
+			log('SWF postMixInProperties');
+			this.prepare(this.flashVars);
 		},
 
 		prepare: function(options){
@@ -66,7 +72,7 @@ define([
 
 			if(options.loader){
 				this.movie = dojo.moduleUrl('dx-media', 'resources/loader.swf');
-				options.loadUrl = options.loadUrl;
+				options.loadUrl = options.loadUrl || options.src;
 				options.debugPrefix = options.debugPrefix || 'VID';
 			}else{
 				this.movie = options.src;

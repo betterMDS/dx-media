@@ -34,7 +34,45 @@ define([
 			flv: 'video/flv'
 		},
 
-		TYPES = lang.mix({}, [HTML5TYPES, SLTYPES, FLASHTYPES]);
+		TYPES = lang.mix({}, [HTML5TYPES, SLTYPES, FLASHTYPES]),
+
+		determineSource =  function(/*Array*/sources, /*String|Array*/renderer){
+			//	summary:
+			//		Determines from a list of sources, which video would be most
+			//		optimal to play in the current video renderer, and returns
+			//		the src (file path).
+
+			//
+			var src;
+			if(Array.isArray(renderer)){
+
+				renderer.some(function(r){
+					sources.some(function(s){
+						log('   test', s.type, r)
+						if(supports(s.type, r)){
+							src = s.src;
+							renderer = r;
+							return true;
+						}
+						return false;
+					}, this);
+					return !!src;
+				}, this);
+
+			}else{
+				sources.some(function(s){
+					if(supports(s.type, renderer)){
+						src = s.src;
+						return true;
+					}
+					return false;
+				}, this);
+			}
+			return {
+				src:src,
+				renderer:renderer
+			};
+		},
 
 		supports = function(type, renderer){
 			if(renderer == 'html5' && has(type)){
@@ -48,13 +86,21 @@ define([
 		},
 
 		deriveType =  function(filename){
-			log('deriveType', filename)
 			if(!filename) return null;
 			var ext = lang.last(filename.split('.'));
 			return TYPES[ext];
 		}
 
-		getSources = function(node){
+		getSources = function(node, src){
+
+			if(src){
+				return [{
+					src:src,
+					node:node,
+					type:deriveType(src)
+				}];
+			}
+
 			if(dom.prop(node, 'src')){
 				return [{
 					src:dom.prop(node, 'src'),
@@ -75,6 +121,9 @@ define([
 			}, this);
 			return a;
 		}
+
+
+
 
 	var Mobile = declare("dx-media.mobile.Video", [Widget], {
 
@@ -105,29 +154,51 @@ define([
 		// 		The type of video renderer to be used.
 		renderer:'html5',
 
-		constructor: function(/*Object*/options, node){
+		constructor: function(/*Object*/options, /*DOMNode*/node){
+			log('MOBILE VIDEO CONSTR');
+			console.log(options, node)
 
+			// need to check if this is parent and if so, call:
+			this.prepareVideoAttributes(options, node);
+		},
+
+		prepareVideoAttributes: function(/*Object*/options, /*DOMNode*/node){
 			// A properly formed video tag works fine out of the gate.
-			if(node){
-				this.sources = this.getSources(node);
-				this.src = this.determineSource(this.sources);
+			log('prepareVideoAttributes', node, options, this.renderer)
+			if(node || options.src){
+				this.sources = getSources(node, options.src);
+				log('this.sources', this.sources, this.renderer)
+				var obj = determineSource(this.sources, this.renderer);
+				this.src = obj.src;
+				this.renderer = obj.renderer;
 				log('src:', this.src);
 			}
-
+			if(node){
+				if(!this.width || /\%/.test(this.width)){
+					var box = dom.box(node);
+					this.width = box.w;
+					this.height = box.h;
+					log('size:', this.width, this.height)
+				}
+			}
 			if(this.width){
 				this.attributes = ['width="'+this.width+'"', 'height="'+this.height+'"'];
 			}
 		},
 
 		postMixInProperties: function(){
-			if(Array.isArray(this.attributes)) this.attributes = this.attributes.join(' ');
+			//log('MOBILE VIDEO postMixInProperties');
+			//this.prepareVideoAttributes(options, node);
 		},
 
 		postCreate: function(){
+			//
 			// extending classes should not inherit this postCreate
+			//
 
 			// for mobile developing in desktop Safari:
-			if(has('fake-mobile')){
+			// and Android will only play on a click event
+			if(has('fake-mobile') || has('android')){
 				log('fake-mobile');
 				var playing = 0;
 				on(this.domNode, "click", this, function(){
@@ -154,22 +225,21 @@ define([
 				this.onComplete(this.domNode);
 				this.onStop(this.domNode);
 			});
+
+			var box = dom.box(window); log('window size:', box.w, box.h);
+
 		},
 
-		deriveType: function(/*String*/filename){
-			//	summary:
-			//		Derives a mimetype string from the extension of a video file.
-			return deriveType(filename); // String
-		},
 
-		getSources: function(/*DOMNode*/node){
-			//	summary:
-			//		Finds the source child elements of the main video node, and
-			//		returns an array of objects with information of each. If
-			//		there are no source nodes (as in teh case of being created
-			//		programtically) this will return an empty array.
-			//
-			return getSources(node); // Array
+		getSrc: function(node){
+			// This should be called before postCreate, therefore node must be
+			// the srcRefNode, not this.domNode
+			if(!this.src && node){
+				this.sources = this.getSources(node);
+				this.src = this.determineSource(this.sources);
+				log('src:', this.src);
+			}
+			return this.src;
 		},
 
 		determineSource: function(/*Array*/sources){
@@ -177,16 +247,11 @@ define([
 			//		Determines from a list of sources, which video would be most
 			//		optimal to play in the current video renderer, and returns
 			//		the src (file path).
+			//	NOTE: If renderer is an Array, the best one is determined
+			//	as a side effect.
 			//
-			var src;
-			sources.some(function(s){
-				if(this.supports(s.type)){
-					src = s.src;
-					return true;
-				}
-				return false;
-			}, this);
-			return src; //String
+
+			return determineSource(sources, this.renderer);
 		},
 
 		supports: function(/*String*/type, /*String?*/renderer){
@@ -200,14 +265,30 @@ define([
 			//			The video renderer: html5, silverlight, or Flash.
 			//
 			renderer = renderer || this.renderer;
-			return supports(type, this.renderer);
+			return supports(type, renderer);
+		},
+
+		getSources: function(/*DOMNode*/node){
+			//	summary:
+			//		Finds the source child elements of the main video node, and
+			//		returns an array of objects with information of each. If
+			//		there are no source nodes (as in teh case of being created
+			//		programtically) this will return an empty array.
+			//
+			return getSources(node); // Array
+		},
+
+		deriveType: function(/*String*/filename){
+			//	summary:
+			//		Derives a mimetype string from the extension of a video file.
+			return deriveType(filename); // String
 		},
 
 		/***********************************************************************
-		 *
-		 *								Methods
-		 *			(most of which should be overridden by extending class)
-		 *
+		 *																	   *
+		 *								Methods								   *
+		 *			(most of which should be overridden by extending class)    *
+		 *																	   *
 		 **********************************************************************/
 
 		centerVideo: function(){
@@ -332,6 +413,7 @@ define([
 			//		Used for Flash and Silverlight - hides the fullscreen button
 			//		in the upper right corner.
 		},
+
 		removeFullscreen: function(){
 			//	summary:
 			//		Used for Flash and Silverlight - hides the fullscreen button
@@ -495,6 +577,11 @@ define([
 			// 		Fired when video resizes, but not when it goes fullscreen
 		}
 	});
+
+	Mobile.determineSource = determineSource;
+	Mobile.deriveType = deriveType;
+	Mobile.supports = supports;
+	Mobile.getSources = getSources;
 
 	return Mobile;
 });

@@ -2,57 +2,65 @@
 <html lang="en">
 <head>
     <title>Test dx-video Mobile Video</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-	<!--<meta name="viewport" content="width=device-width, user-scalable=no" />-->
 	<meta name="apple-mobile-web-app-capable" content="yes"/>
+
+	<!--<meta name="viewport" content="width=device-width, user-scalable=no" />-->
+
 	<link href="../resources/dxMobile.css" rel="stylesheet" />
+	<link href="../resources/dxPlayerMobile.css" rel="stylesheet" />
 	<style>
 		html, body{
-			width:480px;
+			width: 100%;
+			height: 100%;
 			margin:0;
 			padding:0;
 		}
-		#player{
-			width:480px;
-			height:270px;
+		#player {
+			width: 320px;
+			height:180px;
 			position:relative;
+			margin: 0px auto;
 		}
 
-		@media all and (max-width: 480px) {
-			html, body, #player {
-				width: 320px;
-				max-width:320px;
-			}
-			#player {
-				height:180px;
-			}
-			textarea{
-				width:300px;
-			}
+		body{
+			background: #00ff00;
+		}
+		.view{
+			background: #ffff00;
+		}
+		#player{
+			background: #ff0000;
+		}
+		video{
+			background: #0000ff;
 		}
 	</style>
     <script>
         dojoConfig = {
 			// the app if fully async capable; therefore use async mode
-			async:1
+			async:1,
+			debug:1,
+			androidDebug:1,
+			pageDebug:1
 		};
     </script>
     <script src="../../dojo/dojo.js"></script>
 	<script>
 		require([
-				"dojo/parser",
-				"dojo/domReady!"
-			], function(parser, ready){
-				parser.parse();
-			});
+				"dx-alias/parser!"
+			], 1);
 	</script>
 </head>
 <body>
-
-    <div id="player">
-		<video id='vid' data-dojo-type="dx-media/mobile/Video" poster="media/images/SightAndSound.jpg">
-			<source src="media/video/SightAndSound_sm.mp4"></source>
-		</video>
+	<div class="view">
+		<div id="player">
+			<video id='vid' data-dojo-type="dx-media/mobile/Video" poster="media/images/SightAndSound.jpg">
+				<source src="media/video/SightAndSound_sm.mp4"></source>
+			</video>
+		</div>
+		<div id='djDbg'></div>
 	</div>
 
 </body>

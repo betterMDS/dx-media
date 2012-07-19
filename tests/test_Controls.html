@@ -10,9 +10,9 @@
 			padding:0;
 			background:#ccc;
 		}
-		#player{
+		#player, #player2{
 			width:640px;
-			height:360px;
+			height:60px;
 			position:relative;
 		}
 
@@ -25,25 +25,27 @@
     <script src="../../dojo/dojo.js"></script>
 	<script>
 		require([
-				"dojo",
-				"dojo/parser",
-				"dojo/domReady!",
-				"dx-alias/shim",
-				"dx-media/controls/Controlbar",
-				"dx-media/controls/elements/all"
-			], function(dojo, parser){
+				"dx-alias/parser!",
+				'dx-media/controls/Controlbar',
+				'dx-media/controls/elements/Play',
+				'dx-media/controls/elements/Fullscreen',
+				'dx-media/controls/elements/Volume',
+				'dx-media/controls/elements/Time',
+				'dx-media/controls/elements/Progress',
+				'dx-media/controls/elements/Duration',
+			], function(parser, Controlbar, Play, Fullscreen, Volume, Time, Progress, Duration){
 
-			cb = function(data){
-				console.log('data', data, d.isRejected());
-			}
-			doError = function(e){
-				console.error('doError:', e);
-			}
-			var d = parser.parse();
-			d.then(
-				cb
-				,doError
-			)
+			console.info('---- controls 2 ----');
+
+			var controls = new Controlbar({width:640, height:30}, 'player2');
+			controls.addChildren([
+				new Play({}),
+				new Fullscreen({}),
+				//new Volume({}),
+				//new Time({}),
+				//new Progress({width:100}),
+				//new Duration({})
+			]);
 
 		});
 
@@ -52,12 +54,10 @@
 <body>
 
     <div id="player">
-		<div data-dojo-type="dx-media/controls/Controlbar" data-dojo-props="width:640, height:360">
+		<div data-dojo-type="dx-media/controls/Controlbar" data-dojo-props="width:640, height:30">
 			<div data-dojo-type="dx-media/controls/elements/Play"></div>
 			<div data-dojo-type="dx-media/controls/elements/Fullscreen"></div>
 			<div data-dojo-type="dx-media/controls/elements/Volume"></div>
-			<!--<div data-dojo-type="dx-media/controls/elements/FlexSpace">
-			-->
 
 				<div data-dojo-type="dx-media/controls/elements/Time"></div>
 				<div data-dojo-type="dx-media/controls/elements/Progress" data-dojo-props='width:100'></div>
@@ -68,6 +68,8 @@
 			<div data-dojo-type="dx-media/controls/elements/Twitter"></div>
 		</div>
 	</div>
+
+	<div id='player2'></div>
 
 
 </body>

@@ -1,0 +1,53 @@
+.dxPluginsVAST{
+	outline:0px solid #ff0000;
+	/*background:rgba(255,255,0,.3);*/
+	width:100%;
+	height:0px;
+	-webkit-transition: height 700ms ease;
+	-moz-transition: height 700ms ease;
+	overflow:hidden;
+	text-align:center;
+	padding-top:0px;
+}
+.dxPluginsVAST img{
+	width:96%;
+	max-width:468px;
+}
+
+
+.dj_landscape .dxVastContainer{
+	position:relative;
+}
+.dj_landscape .dxPluginsVAST{
+	position:absolute;
+	bottom:0;
+}
+/* browser */
+.dj_landscape .dxPluginsVAST.showing{
+	height:105px;
+
+}
+/* phone */
+.dj_phone.dj_landscape .dxPluginsVAST.showing{
+	height:100px;
+	padding-top:5px;
+}
+
+
+.dj_portrait .dxVastContainer{
+	position:absolute;
+	bottom:30px;
+	width:100%;
+}
+.dj_portrait .dxPluginsVAST{
+	position:relative;
+
+}
+/* browser */
+.dj_portrait .dxPluginsVAST.showing{
+	height:65px;
+}
+/* phone */
+.dj_phone.dj_portrait .dxPluginsVAST.showing{
+	height:45px;
+}

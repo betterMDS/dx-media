@@ -2,17 +2,33 @@
 <html lang="en">
 <head>
     <title>Test dx-flash Video</title>
+	<link href="../resources/dxHtml5Video.css" rel="stylesheet" />
 	<style>
 		html, body{
-			width:640px;
 			margin:0;
-			padding:0;
+			padding:5px 20px;
 			background:#ccc;
+			font-family: sans-serif;
 		}
-		#player{
-			width:640px;
-			height:360px;
-			position:relative;
+		.row{
+			position: relative;
+		}
+		.pWrap, .pWrap2{
+			width:320px;
+			position:absolute;
+			top:0;
+			left:0;
+		}
+		.pWrap2{
+			left:340px;
+		}
+		label{
+			display: block;
+			text-align: center;
+		}
+		#player, #player2{
+			width:320px;
+			height:180px;
 		}
 
 	</style>
@@ -24,26 +40,38 @@
     <script src="../../dojo/dojo.js"></script>
 	<script>
 		require([
-				"dojo",
-				"dojo/parser",
-				"dojo/domReady!",
-				"dx-media/flash/version",
+				"dx-alias/parser!",
+				"dx-alias/dom",
 				"dx-media/flash/Video"
-			], function(dojo, parser, ready, version){
-			console.log('dojo', dojo);
+			], function(parser, dom, Video){
 
-			console.log('Flash version:', version.toString())
-            parser.parse();
-
+			new Video({
+				width:320,
+				height:180,
+				controls:true,
+				autoplay:true,
+				src:'../tests/media/video/SightAndSound_sm.mp4'
+			}, 'player2');
 		});
 	</script>
 </head>
 <body>
+	<h1>Test dx-flash Video</h1>
+	<div class='row'>
+		<div class='pWrap'>
+			<label>Markup Player</label>
+			<div id="player">
+				<video id="video" data-dojo-type="dx-media/flash/Video" data-dojo-props="width:320, height:180, controls:true, autoplay:true">
+					<source src='./media/video/SightAndSound_sm.mp4'></source>
+				</video>
+			</div>
+		</div>
+		<div class='pWrap2'>
+			<label>Programmatic Player</label>
+			<div id='player2'>
 
-    <div id="player">
-		<div data-dojo-type="dx-media/flash/Video" data-dojo-props="path:'../tests/media/video/SightAndSound_sm.mp4', width:640, height:360"></div>
+			</div>
+		</div>
 	</div>
-
-
 </body>
 </html>
