@@ -70,6 +70,8 @@ define([
 				this.on(window, 'resize', this, 'resize');
 			}
 
+			this.showVideo();
+
 			this.resize();
 		},
 
@@ -84,7 +86,7 @@ define([
 			if(this.inited) return;
 			this.inited = 1;
 
-			this.parentNode = isMobile ? window : this.controls.domNode.parentNode;
+			this.parentNode = /*isMobile ? window : */this.controls.domNode.parentNode;
 
 			console.log('map', this.map);
 
@@ -178,7 +180,6 @@ define([
 				this.on(this.map.Slideshow, 'onClick', this, 'showSlideshow');
 			}
 			if(this.map.Vtour){
-
 				this.on(this.map.Vtour, 'onClick', this, 'showVtour');
 			}
 
@@ -200,12 +201,12 @@ define([
 			if(this.screenButton) this.screenButton.show();
 		},
 		showVtour: function(){
-			log('Vtour click')
+			log('Vtour click');
 			this.hideComponents();
 			this.vtour.show();
 		},
 		showSlideshow: function(){
-			log('Slideshow click')
+			log('Slideshow click');
 			this.hideComponents();
 			this.slideshow.show();
 		},
@@ -219,8 +220,9 @@ define([
 		},
 
 		resize: function(){
+
 			var box = dom.box(this.parentNode);
-			//log('this.displayElements:', this.displayElements)
+			log('resize:', box.w, box.h);
 			box.isFullscreen = this.isFullscreen;
 			this.displayElements.forEach(function(el){
 				el.resize && el.resize(box);

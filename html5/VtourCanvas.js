@@ -217,7 +217,7 @@ define([
 
 			this.ani = timer(this, function(){
 				this.move(-this.speed, true);
-			}, Infinity, 20, 'debug', true, {id:'ani_'+this.index});
+			}, Infinity, 20, {id:'ani_'+this.index, debug:1, paused:1});
 
 			this.src && this.load();
 

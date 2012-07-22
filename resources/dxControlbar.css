@@ -2,14 +2,16 @@
 .dxControlbar{
 	position:absolute;
 	left:0;
+	z-index: 500;
 	height:27px;
 	width:100%;
 	padding:0px;
 	bottom:0px;
+	background: #ff0000;
 	background: -moz-linear-gradient(top, #37383e 0%, #2d2d2d 49%, #222222 51%);
 	background: -webkit-linear-gradient(top, #37383e 0%, #2d2d2d 49%, #222222 51%);
-	filter: progid:DXImageTransform.Microsoft.gradient(enabled='true', startColorstr=#FF37383e, endColorstr=#FF222222, gradientType=0);
-
+	/* Android:*/
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#37383e), to(#222222));
 	font-family:sans-serif;
 	font-size:11px;
 	color:#fff;

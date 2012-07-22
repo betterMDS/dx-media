@@ -15,23 +15,46 @@
 	<script>
 		dojoConfig = {
 			async:1,
-			parseOnLoad: true,
+			debug:1,
+			androidDebug:true,
 			mblAlwaysHideAddressBar: true
 		}
 	</script>
-	<script type="text/javascript" src="../../dojo/dojo.js"></script>
+	<script src="../../dojo/dojo.js"></script>
 
-	<script type="text/javascript">
+	<script>
 		require([
 			"dx-alias/parser!"
 		], function(){});
 	</script>
+	<style>
 
+		#player{
+			background: #000;
+		}
+		.dj_portrait .dxControlbar{
+			bottom:-19px;
+		}
+		.dj_landscape .dxControlbar{
+			bottom:0px;
+		}
+		.dj_landscape #player{
+			height:100%;
+		}
+		.dj_portrait #player{
+			height:210px;
+		}
+		#djDbg{
+			position: absolute;
+			top:240px;
+			left:0;
+			width: 100%;
+		}
+	</style>
 </head>
 <body>
-	<div class="view">
 		<div id="player">
-			<video id="video" data-dojo-type="dx-media/mobile/Video" data-dojo-props="width:640, height:360">
+			<video id="video" data-dojo-type="dx-media/mobile/Video">
 				<source src='./media/video/DojoMaster.mp4'></source>
 				<source src='./media/video/SightAndSound.webm'></source>
 			</video>
@@ -54,6 +77,6 @@
 				 data-dojo-props="controls:'controls',video:'video',preview:'preview',screenButton:'screenButton', vtour:'vtour', slideshow:'slideshow'">
 			</div>
 		</div>
-	</div>
+		<div id='djDbg'></div>
 </body>
 </html>

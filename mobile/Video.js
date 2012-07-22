@@ -14,7 +14,7 @@ define([
 	//		devices.
 	//		This is also the Base Class for the other Video renderers.
 	//
-	var log = logger('MOV', 1);
+	var log = logger('MOV', 0);
 
 	var
 		HTML5TYPES = {
@@ -155,8 +155,7 @@ define([
 		renderer:'html5',
 
 		constructor: function(/*Object*/options, /*DOMNode*/node){
-			log('MOBILE VIDEO CONSTR');
-			console.log(options, node)
+			log('MOBILE VIDEO CONSTR', options, node)
 
 			// need to check if this is parent and if so, call:
 			this.prepareVideoAttributes(options, node);
@@ -333,7 +332,7 @@ define([
 
 			this.centerVideo();
 
-			log('resize!');
+			log('resize!', box);
 			this.onResize(box);
 		},
 

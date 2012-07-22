@@ -1,20 +1,18 @@
 define([
 	"dojo/_base/declare",
-	"dojo/_base/connect",
-	"dojo/sniff",
-	"dijit/_WidgetBase",
-	"dijit/_TemplatedMixin",
 	"dijit/_Container",
 	"dojo/io/script",
 	"./Photo",
+	"dx-alias/Widget",
 	"dx-alias/on",
+	"dx-alias/has",
 	"dx-alias/dom",
 	"dx-alias/log",
 	'dx-alias/mouse',
 	'dx-alias/string',
 	'dx-timer/timer',
 	"../mobile/common"
-], function(declare, connect, has, _WidgetBase, _TemplatedMixin, _Container, io, Photo, on, dom, logger, mouse, string, timer, common){
+], function(declare, _Container, io, Photo, Widget, on, has, dom, logger, mouse, string, timer, common){
 	//	summary:
 	//		A horizontal image slideshow that pans between images by
 	//		click-dragging in a browser or by a swipe gesture on a touch device,
@@ -27,7 +25,7 @@ define([
 
 	var isMobile = has('ios') || has('android');
 
-	return declare('dx-media.html5.Slideshow', [_WidgetBase, _TemplatedMixin, _Container], {
+	return declare('dx-media.html5.Slideshow', [Widget, _Container], {
 
 		templateString:'<div class="dxSlideshow"><div class="dxSlideshowContainer" data-dojo-attach-point="containerNode"></div></div>',
 		buttonClass:'',
@@ -112,7 +110,7 @@ define([
 				if(isMobile){
 					on(common, 'updateOrient', this, '_resize');
 				}else{
-					connect.subscribe('/dojox/mobile/screenSize/tablet', this, '_resize');
+					on.sub('/dojox/mobile/screenSize/tablet', this, '_resize');
 					on(window, 'resize', this, '_resize');
 				}
 			}
@@ -198,10 +196,8 @@ define([
 			});
 		},
 
-
 		_resize: function(){
 			this.resize(dom.box(this.domNode));
-
 		},
 
 		resize: function(box){
@@ -214,23 +210,15 @@ define([
 			}
 			this.width = box.w;
 			this.height = box.h;
+			dom.style(this.domNode, {
+				width: box.w + 'px',
+				height: box.h + 'px'
+			});
 			this.images.forEach(function(w){
 				//w.show();
 				w.onSize(box);
 			});
 			this.currentImages && this.setCurrentImages();
-		},
-
-		show: function(){
-			if(this.showing) return;
-			this.showing = 1;
-			dom.show(this.domNode);
-		},
-
-		hide: function(){
-			if(!this.showing) return;
-			this.showing = 0;
-			dom.hide(this.domNode);
 		},
 
 		onClick: function(){

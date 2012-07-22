@@ -49,8 +49,13 @@ define([
 		},
 
 		resize: function(box){
+			//console.log('VTOUR RESIZE' , box, this.domNode)
 			if(!box) return;
 			// actually should be all, not just this one
+			dom.style(this.domNode, {
+				width: box.w + 'px',
+				height: box.h + 'px'
+			});
 			this.current.onSize(box);
 		},
 

@@ -12,7 +12,7 @@ define([
 	//	summary:
 	//		Media player container widget for controls (play button, etc).
 	//
-	var log = logger('CON', 1);
+	var log = logger('CON', 0);
 
 	return declare('dx-media.controls.Controlbar', [Widget], {
 

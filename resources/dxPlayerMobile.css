@@ -14,7 +14,14 @@ html.mobile, .mobile body {
 	width:100%;
 	height: 100%; /* maybe? */
 	outline:0px solid #00dddd;
-}/*
+}
+
+#player{
+	position: relative;
+	width:100%;
+	height: 100%;
+}
+/*
 .dj_portrait .view{
 	height:480px;
 }
@@ -31,8 +38,6 @@ h1{
 	color:#fff;
 	background:#000;
 	position:relative;
-
-
 }
 
 .dxPlayerPreview{
@@ -75,9 +80,3 @@ h1{
 .dj_portrait .dxMobileVideo{
 	height:100%;
 }
-
-
-
-
-
-

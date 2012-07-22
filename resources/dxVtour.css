@@ -1,11 +1,8 @@
-.dxVTour{
-	position:absolute;
-	z-index:260;
-	top:0px;
-	left:0px;
-	background:rgba(255,0,0, .5);
+.dxVtour{
+
+	background:rgba(255,0,0, .1);
 }
-.dxVTourClose{
+.dxVtourClose{
 	position:absolute;
 	top:2px;
 	right:2px;
