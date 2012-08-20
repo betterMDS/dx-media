@@ -23,7 +23,7 @@ Other "media: includes:
 
 * Slideshow: An iPhone-like photo viewer that works on desktop and mobile
 * Virtual Tour: A 360 degree image viewer that works on desktop and mobile
-* Image: a wrapper for a standard HTML image file, that always for more versatility such as load and error events, sizing methods, and hiding the loading flash.
+* Image: a wrapper for a standard HTML image file, that allows for more versatility such as load and error events, sizing methods, and hiding the loading flash.
 * SWF: A loader and wrapper for Flash SWFs. More detail soon.
 
 Video players will include:
